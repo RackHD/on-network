@@ -105,5 +105,3 @@ paths:
 #            schema:
 #              $ref: '#/definitions/About'
 #
-
-
