@@ -1,0 +1,5 @@
+# IDE files
+.idea
+
+# Compiled binary
+cmd/on-network-server/on-network-server
