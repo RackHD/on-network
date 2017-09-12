@@ -28,9 +28,3 @@ _testmain.go
 *.exe
 *.test
 *.prof
-
-# IDE files
-.idea
-
-# Compiled binary
-cmd/on-network-server/on-network-server
