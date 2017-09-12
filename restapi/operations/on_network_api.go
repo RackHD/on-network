@@ -49,15 +49,10 @@ func NewOnNetworkAPI(spec *loads.Document) *OnNetworkAPI {
 		APIKeyHeaderAuth: func(token string) (interface{}, error) {
 			return nil, errors.NotImplemented("api key auth (APIKeyHeader) authorization from header param [authorization] has not yet been implemented")
 		},
+
+		// default authorizer is authorized meaning no requests are blocked
+		APIAuthorizer: security.Authorized(),
 	}
-
-}
-
-type OnNetworkAutorizer struct {
-}
-
-func (o *OnNetworkAutorizer) Authorize(*http.Request, interface {}) error  {
-	return nil
 }
 
 /*OnNetworkAPI the on network API */

@@ -34,7 +34,7 @@ Class | Method | HTTP request | Description
 
 
 ## Documentation For Authorization
-After generating the code we edited the files configure_on_network.go ans on_network_api.go to disable authentication.
+After generating the code we edited the file configure_on_network.go to disable authentication.
 In configure_on_network.go - Generated Code:
 	api.APIKeyHeaderAuth = func(token string) (interface{}, error) {
 		return nil, errors.NotImplemented("api key auth (APIKeyHeader) authorization from header param [authorization] has not yet been implemented")
@@ -46,20 +46,7 @@ In configure_on_network.go - Modified Code:
 		return token, nil
    }
 ```
-In  on_network_api.go - Generated Code:
-```
-	APIAuthorizer: security.Authorized(),
-```
 
-In  on_network_api.go - Modified Code:
-```
-    type OnNetworkAutorizer struct {
-    }
-
-    func (o *OnNetworkAutorizer) Authorize(*http.Request, interface {}) error  {
-    	return nil
-    }
-```
 
 ## Documentation for Handlers
 
