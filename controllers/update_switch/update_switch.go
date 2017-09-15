@@ -10,6 +10,7 @@ import (
 	"github.com/RackHD/on-network/models"
 	"github.com/RackHD/on-network/switch_operations/cisco"
 	"github.com/RackHD/on-network/switch_operations/cisco/nexus"
+	"github.com/RackHD/on-network/switch_operations/switch_api"
 )
 
 // UpdateSwitch is a struct for the http objects
