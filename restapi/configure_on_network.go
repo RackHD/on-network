@@ -56,7 +56,7 @@ func configureAPI(api *operations.OnNetworkAPI) http.Handler {
 		return aboutctrl.MiddleWare(params.HTTPRequest)
 	})
 	api.UpdateSwitchUpdateSwitchHandler = update_switch.UpdateSwitchHandlerFunc(func(params update_switch.UpdateSwitchParams, principal interface{}) middleware.Responder {
-		return updateswitchctrl.MiddleWare(params.HTTPRequest)
+		return updateswitchctrl.MiddleWare(params.HTTPRequest, params.Body)
 	})
 
 	api.ServerShutdown = func() {}
