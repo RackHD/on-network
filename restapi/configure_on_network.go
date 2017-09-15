@@ -16,7 +16,7 @@ import (
 	"github.com/RackHD/on-network/restapi/operations/update_switch"
 
 	aboutctrl "github.com/RackHD/on-network/controllers/about"
- 	updateswitchctrl "github.com/RackHD/on-network/controllers/update_switch"
+	updateswitchctrl "github.com/RackHD/on-network/controllers/update_switch"
 )
 
 // This file is safe to edit. Once it exists it will not be overwritten

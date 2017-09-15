@@ -3,13 +3,13 @@ package about_test
 import (
 	. "github.com/RackHD/on-network/controllers/about"
 
+	"encoding/json"
+	"github.com/RackHD/on-network/models"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"io"
-	"encoding/json"
-	"net/http/httptest"
 	"net/http"
-	"github.com/RackHD/on-network/models"
+	"net/http/httptest"
 )
 
 // TestProducer is ...

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
 type NexusRunner struct {
@@ -32,7 +33,7 @@ type CopyCommand struct {
 	Dst string
 }
 
-func (nr *NexusRunner) Run(command string) (string, error) {
+func (nr *NexusRunner) Run(command string, timeout time.Duration) (string, error) {
 	endpoint := fmt.Sprintf("http://%s/ins", nr.IP)
 
 	commandParam := Params{command, 1}
@@ -52,7 +53,11 @@ func (nr *NexusRunner) Run(command string) (string, error) {
 
 	fmt.Println("making request to nxos...")
 
-	resp, err := (&http.Client{}).Do(req)
+	client := &http.Client{}
+	if timeout != 0 {
+		client.Timeout = timeout
+	}
+	resp, err := client.Do(req)
 	if err != nil {
 		return "", fmt.Errorf("error executing request: %+v", err)
 	}
