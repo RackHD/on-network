@@ -1,17 +1,17 @@
 package update_switch_test
 
-
 import (
 	. "github.com/RackHD/on-network/controllers/update_switch"
 
+	"bytes"
+	"encoding/json"
+	"io"
+	"net/http"
+	"net/http/httptest"
+
+	"github.com/RackHD/on-network/models"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"io"
-	"encoding/json"
-	"net/http/httptest"
-	"net/http"
-	"bytes"
-	"github.com/RackHD/on-network/models"
 )
 
 type TestProducer struct{}
