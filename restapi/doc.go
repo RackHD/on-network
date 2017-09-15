@@ -6,7 +6,7 @@ Package restapi on-network api
     Schemes:
       http
     Host: localhost
-    BasePath: /api
+    BasePath: /
     Version: 0.0.1
 
     Consumes:

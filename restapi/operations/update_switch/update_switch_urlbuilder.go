@@ -38,9 +38,6 @@ func (o *UpdateSwitchURL) Build() (*url.URL, error) {
 	var _path = "/updateSwitch"
 
 	_basePath := o._basePath
-	if _basePath == "" {
-		_basePath = "/api"
-	}
 	result.Path = golangswaggerpaths.Join(_basePath, _path)
 
 	return &result, nil

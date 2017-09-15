@@ -22,7 +22,6 @@ func init() {
     "title": "on-network api",
     "version": "0.0.1"
   },
-  "basePath": "/api",
   "paths": {
     "/about": {
       "get": {
@@ -121,6 +120,7 @@ func init() {
       }
     },
     "UpdateSwitch": {
+      "type": "object",
       "required": [
         "ip",
         "username",

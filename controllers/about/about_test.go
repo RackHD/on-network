@@ -33,7 +33,7 @@ var _ = Describe("About", func() {
 		It("INTEGRATION info API should return an About object containing name='on-network'", func() {
 			// Create on-network api about
 			serverURL := "http://localhost:8080"
-			req, err := http.NewRequest("GET", serverURL+"/api/about", nil)
+			req, err := http.NewRequest("GET", serverURL+"/about", nil)
 
 			Expect(err).ToNot(HaveOccurred())
 			// Put HTTP Request into router
