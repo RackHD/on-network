@@ -32,11 +32,11 @@ func (c *Switch) Update(imageURL string) error {
 		return fmt.Errorf("error install image: %+v", err)
 	}
 
-	// After installation, the switch takes around 10 seconds to reboot, so we need to wait before we run show version
+	//After installation, the switch takes around 10 seconds to reboot, so we need to wait before we run show version
 	fmt.Println("Sleeping for 20 seconds")
 	time.Sleep(20 * time.Second)
 
-	fmt.Println("Verifying management connection and version update")
+	fmt.Println("Verifying management connection and version upgrade")
 
 	timeout := time.NewTimer(3 * time.Minute).C
 	tick := time.NewTicker(5 * time.Second).C

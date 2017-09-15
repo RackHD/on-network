@@ -20,7 +20,6 @@ import (
 	aboutctrl "github.com/RackHD/on-network/controllers/about"
 	updateswitchctrl "github.com/RackHD/on-network/controllers/update_switch"
 
-
 )
 
 // This file is safe to edit. Once it exists it will not be overwritten
