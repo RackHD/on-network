@@ -3,17 +3,14 @@
 FROM golang
 
 # Copy the local package files to the container's workspace.
-ADD . /go/src/github.com/RackHD/on-network
-WORKDIR /go/src/github.com/RackHD/on-network
+ADD . /project
+WORKDIR /project
 
-# Build the on-network-server command inside the container.
-# (You may fetch or manage dependencies here,
-# either manually or with a tool like "godep".)
-RUN go get ./...
-RUN go install github.com/RackHD/on-network/cmd/on-network-server
+# Build the linux binary for on-network
+RUN make link clean deps linux
 
-# Run the outyet command by default when the container starts.
-ENTRYPOINT /go/bin/on-network-server --port 8080
+# Run the on-network command by default when the container starts.
+ENTRYPOINT /project/cmd/on-network-server/on-network-linux-amd64 --port 8080
 
 # Document that the service listens on port 8080.
 EXPOSE 8080
