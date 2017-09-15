@@ -10,22 +10,27 @@ import (
 
 	"github.com/RackHD/on-network/models"
 	"github.com/RackHD/on-network/switch_operations/cisco"
-	"github.com/RackHD/on-network/switch_operations/switch_api"
+	"github.com/RackHD/on-network/switch_operations/cisco/nexus"
+	"github.com/RackHD/on-network/switch_operations/switch_interface"
 )
 
-// Info is a struct for the http objects
+// UpdateSwitch is a struct for the http objects
 type UpdateSwitch struct {
 	Request  *http.Request
-	Client   switch_api.Switch
+	Client   switch_interface.Switch
 	ImageURL string
 }
 
 // MiddleWare handles the route call
 func MiddleWare(r *http.Request, body *models.UpdateSwitch) middleware.Responder {
-	var client switch_api.Switch
+	var client switch_interface.Switch
 	if *body.SwitchType == "cisco" {
 		client = &cisco.Switch{
-			&cisco.NexusRunner{*body.IP, *body.Username, *body.Password},
+			Runner: &nexus.NexusRunner{
+				IP:       *body.IP,
+				Username: *body.Username,
+				Password: *body.Password,
+			},
 		}
 	}
 
@@ -45,9 +50,11 @@ func (c *UpdateSwitch) WriteResponse(rw http.ResponseWriter, rp runtime.Producer
 		c.notSupported(rw, rp)
 	}
 }
+
 func (c *UpdateSwitch) notSupported(rw http.ResponseWriter, rp runtime.Producer) {
 	rw.WriteHeader(http.StatusNotImplemented)
 }
+
 func (c *UpdateSwitch) postUpdateSwitch(rw http.ResponseWriter, rp runtime.Producer) {
 	err := c.Client.Update(c.ImageURL)
 	if err != nil {

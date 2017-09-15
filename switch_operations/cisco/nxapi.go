@@ -1,39 +1,18 @@
 package cisco
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"path"
 	"strings"
 	"time"
 
-	"github.com/RackHD/on-network/switch_operations/cisco/api"
+	"github.com/RackHD/on-network/switch_operations/cisco/nexus_interface"
 	"github.com/go-openapi/errors"
 	"github.com/google/uuid"
 )
 
 type Switch struct {
-	Runner api.CommandRunner
-}
-
-type Params struct {
-	Command string `json:"cmd"`
-	Version int    `json:"version"`
-}
-
-type CommandRunnerBody struct {
-	JsonRpc string `json:"jsonrpc"`
-	Method  string `json:"method"`
-	Params  Params `json:"params"`
-	ID      int    `json:"id"`
-}
-
-type CopyCommand struct {
-	Src string
-	Dst string
+	Runner nexus_interface.CommandRunner
 }
 
 func (c *Switch) Update(imageURL string) error {
@@ -75,48 +54,4 @@ func (c *Switch) Update(imageURL string) error {
 			}
 		}
 	}
-}
-
-type NexusRunner struct {
-	IP       string `json:"ip"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-func (nr *NexusRunner) Run(command string) (string, error) {
-	endpoint := fmt.Sprintf("http://%s/ins", nr.IP)
-
-	commandParam := Params{command, 1}
-	postBody := CommandRunnerBody{"2.0", "cli", commandParam, 1}
-	bodyBytes, err := json.Marshal(postBody)
-	if err != nil {
-		return "", fmt.Errorf("error marshaling command: %+v", err)
-	}
-
-	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(bodyBytes))
-	if err != nil {
-		return "", fmt.Errorf("error making request: %+v", err)
-	}
-
-	req.Header.Set("Content-Type", "application/json-rpc")
-	req.SetBasicAuth(nr.Username, nr.Password)
-
-	fmt.Println("making request to nxos...")
-
-	resp, err := (&http.Client{}).Do(req)
-	if err != nil {
-		return "", fmt.Errorf("error executing request: %+v", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return string(body), fmt.Errorf("error reading response body: %+v", err)
-	}
-
-	if resp.StatusCode != 200 {
-		return string(body), errors.New(1, "failed to get expected string. status code: %d\nbody: %+v", resp.StatusCode, string(body))
-	}
-
-	return string(body), nil
 }

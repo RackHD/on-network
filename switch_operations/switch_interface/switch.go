@@ -1,4 +1,4 @@
-package switch_api
+package switch_interface
 
 type Switch interface {
 	Update(string) error

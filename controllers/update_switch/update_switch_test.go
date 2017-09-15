@@ -36,11 +36,11 @@ var _ = Describe("UpdateSwitch", func() {
 			serverURL := "http://localhost:8080"
 
 			jsonBody := []byte(`{
-				"ip":"test",
-				"username":"test",
-				"password":"test",
-				"imageURL":"test",
-				"switchType":"test"
+				"ip": "test",
+				"username": "test",
+				"password": "test",
+				"imageURL": "test",
+				"switchType": "cisco"
 			}`)
 
 			req, err := http.NewRequest("POST", serverURL+"/updateSwitch", bytes.NewBuffer(jsonBody))
