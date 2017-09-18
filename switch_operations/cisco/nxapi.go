@@ -32,27 +32,26 @@ func (c *Switch) Update(imageURL string) error {
 		return fmt.Errorf("error install image: %+v", err)
 	}
 
-	//After installation, the switch takes around 10 seconds to reboot, so we need to wait before we run show version
+	// After installation, the switch takes around 10 seconds to reboot, so we need to wait before we run show version
 	fmt.Println("Sleeping for 20 seconds")
 	time.Sleep(20 * time.Second)
 
-	fmt.Println("Verifying management connection and version upgrade")
+	fmt.Println("Verifying management connection and version update")
 
 	timeout := time.NewTimer(3 * time.Minute).C
 	tick := time.NewTicker(5 * time.Second).C
 	for {
 		select {
 		case <-timeout:
-			return errors.New(2, "timeout connecting to switch after upgrade.")
+			return errors.New(2, "timeout connecting to switch after update.")
 
 		case <-tick:
 			body, err := c.Runner.Run("show version", time.Duration(2*time.Second))
 			if err == nil {
 				if strings.Contains(body, imageFileName) == true {
 					return nil
-				} else {
-					return errors.New(3, "failed to find the expected version")
 				}
+				return errors.New(3, "failed to find the expected version")
 			}
 		}
 	}
