@@ -2,17 +2,19 @@ package cisco
 
 import (
 	"fmt"
+	"os"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 
-	"github.com/RackHD/on-network/switch_operations/cisco/nexus_interface"
+	"github.com/RackHD/on-network/switch_operations/cisco/nexus"
 	"github.com/go-openapi/errors"
 	"github.com/google/uuid"
 )
 
 type Switch struct {
-	Runner nexus_interface.CommandRunner
+	Runner nexus.CommandRunner
 }
 
 func (c *Switch) Update(imageURL string) error {
@@ -32,13 +34,25 @@ func (c *Switch) Update(imageURL string) error {
 		return fmt.Errorf("error install image: %+v", err)
 	}
 
+	b, err := strconv.Atoi(os.Getenv("CISCO_BOOT_TIME_IN_SECONDS"))
+	if err != nil {
+		panic("CISCO_BOOT_TIME_IN_SECONDS was not set as an interger!")
+	}
+	bootTimeDuration := time.Duration(b) * time.Second
+
 	// After installation, the switch takes around 10 seconds to reboot, so we need to wait before we run show version
-	fmt.Println("Sleeping for 20 seconds")
-	time.Sleep(20 * time.Second)
+	fmt.Printf("Sleeping for %+v\n", bootTimeDuration)
+	time.Sleep(bootTimeDuration)
 
 	fmt.Println("Verifying management connection and version update")
 
-	timeout := time.NewTimer(3 * time.Minute).C
+	t, err := strconv.Atoi(os.Getenv("CISCO_RECONNECTION_TIMEOUT_IN_SECONDS"))
+	if err != nil {
+		panic("CISCO_RECONNECTION_TIMEOUT_IN_SECONDS was not set as an integer!")
+	}
+	timeoutDuration := time.Duration(t) * time.Second
+
+	timeout := time.NewTimer(timeoutDuration).C
 	tick := time.NewTicker(5 * time.Second).C
 	for {
 		select {

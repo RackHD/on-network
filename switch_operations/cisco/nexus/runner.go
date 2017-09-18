@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-type NexusRunner struct {
+type Runner struct {
 	IP       string `json:"ip"`
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -33,7 +33,7 @@ type CopyCommand struct {
 	Dst string
 }
 
-func (nr *NexusRunner) Run(command string, timeout time.Duration) (string, error) {
+func (nr *Runner) Run(command string, timeout time.Duration) (string, error) {
 	endpoint := fmt.Sprintf("http://%s/ins", nr.IP)
 
 	commandParam := Params{command, 1}

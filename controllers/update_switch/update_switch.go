@@ -23,9 +23,10 @@ type UpdateSwitch struct {
 // MiddleWare handles the route call
 func MiddleWare(r *http.Request, body *models.UpdateSwitch) middleware.Responder {
 	var client switch_operations.Switch
+
 	if *body.SwitchType == "cisco" {
 		client = &cisco.Switch{
-			Runner: &nexus.NexusRunner{
+			Runner: &nexus.Runner{
 				IP:       *body.IP,
 				Username: *body.Username,
 				Password: *body.Password,

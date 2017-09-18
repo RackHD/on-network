@@ -26,7 +26,7 @@ func (fr *FakeRunner) Run(command string, timeout time.Duration) (string, error)
 	}
 
 	if strings.Contains(command, "show") && fr.FailReconnecting {
-		time.Sleep(20 * time.Second)
+		time.Sleep(10 * time.Second)
 		return "", errors.New(2, "failed to reconnect")
 	}
 

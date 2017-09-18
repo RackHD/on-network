@@ -1,4 +1,4 @@
-package nexus_interface
+package nexus
 
 import "time"
 
