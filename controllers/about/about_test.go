@@ -3,13 +3,14 @@ package about_test
 import (
 	. "github.com/RackHD/on-network/controllers/about"
 
+	"encoding/json"
+	"github.com/RackHD/on-network/models"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"io"
-	"encoding/json"
-	"net/http/httptest"
 	"net/http"
-	"github.com/RackHD/on-network/models"
+	"net/http/httptest"
+
 )
 
 // TestProducer is ...
@@ -33,8 +34,7 @@ var _ = Describe("About", func() {
 		It("INTEGRATION info API should return an About object containing name='on-network'", func() {
 			// Create on-network api about
 			serverURL := "http://localhost:8080"
-			req, err := http.NewRequest("GET", serverURL+"/api/about", nil)
-
+			req, err := http.NewRequest("GET", serverURL+"/about", nil)
 			Expect(err).ToNot(HaveOccurred())
 			// Put HTTP Request into router
 			responder := MiddleWare(req)

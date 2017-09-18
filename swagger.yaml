@@ -2,7 +2,6 @@ swagger: "2.0"
 info:
   title: on-network api
   version: "0.0.1"
-basePath: /api
 consumes:
 - application/json
 
@@ -32,6 +31,25 @@ definitions:
         type: string
     required:
     - name
+  UpdateSwitch:
+    type: object
+    required:
+    - ip
+    - username
+    - password
+    - imageURL
+    - switchType
+    properties:
+      ip:
+        type: string
+      username:
+        type: string
+      password:
+        type: string
+      imageURL:
+        type: string
+      switchType:
+        type: string
 
 securityDefinitions:
   APIKeyHeader:
@@ -58,4 +76,34 @@ paths:
             $ref: '#/definitions/ErrorResponse'
       summary: Get about
       tags:
-        - /api
+        - /about
+
+  /updateSwitch:
+    post:
+      description: Update switch firmware based on specified switch type and firmware image
+      operationId: updateSwitch
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/UpdateSwitch"
+      responses:
+        201:
+          description: Successfully issued update switch firmware
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Update switch firmware
+      tags:
+        - /updateSwitch
+
+#        description: Optional description in *Markdown*
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: '#/definitions/About'
+#
+
+
