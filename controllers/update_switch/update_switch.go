@@ -8,21 +8,21 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 
 	"github.com/RackHD/on-network/models"
+	"github.com/RackHD/on-network/switch_operations"
 	"github.com/RackHD/on-network/switch_operations/cisco"
 	"github.com/RackHD/on-network/switch_operations/cisco/nexus"
-	"github.com/RackHD/on-network/switch_operations/switch_interface"
 )
 
 // UpdateSwitch is a struct for the http objects
 type UpdateSwitch struct {
 	Request  *http.Request
-	Client   switch_interface.Switch
+	Client   switch_operations.Switch
 	ImageURL string
 }
 
 // MiddleWare handles the route call
 func MiddleWare(r *http.Request, body *models.UpdateSwitch) middleware.Responder {
-	var client switch_interface.Switch
+	var client switch_operations.Switch
 	if *body.SwitchType == "cisco" {
 		client = &cisco.Switch{
 			Runner: &nexus.NexusRunner{
