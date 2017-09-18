@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+
 // Info is a struct for the http objects
 type About struct {
 	Request *http.Request

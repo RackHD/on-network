@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+
 )
 
 // TestProducer is ...
@@ -34,7 +35,6 @@ var _ = Describe("About", func() {
 			// Create on-network api about
 			serverURL := "http://localhost:8080"
 			req, err := http.NewRequest("GET", serverURL+"/about", nil)
-
 			Expect(err).ToNot(HaveOccurred())
 			// Put HTTP Request into router
 			responder := MiddleWare(req)
