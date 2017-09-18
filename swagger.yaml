@@ -1,0 +1,61 @@
+swagger: "2.0"
+info:
+  title: on-network api
+  version: "0.0.1"
+basePath: /api
+consumes:
+- application/json
+
+definitions:
+  Error:
+    properties:
+      code:
+        format: int32
+        type: integer
+      fields:
+        type: string
+      message:
+        type: string
+  ErrorResponse:
+    properties:
+      message:
+        type: string
+      errors:
+        items:
+          type: string
+        type: array
+    required:
+    - message
+  About:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+
+securityDefinitions:
+  APIKeyHeader:
+    type: apiKey
+    in: header
+    name: authorization
+
+security:
+  - APIKeyHeader: []
+
+paths:
+  /about:
+    get:
+      description: Information about on-network
+      operationId: aboutGet
+      responses:
+        200:
+          description: Successfully retrieved about
+          schema:
+            $ref: '#/definitions/About'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get about
+      tags:
+        - /api
