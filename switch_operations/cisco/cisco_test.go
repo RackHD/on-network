@@ -11,6 +11,8 @@ import (
 )
 
 var _ = Describe("Cisco", func() {
+	var defaultUpdateSwitchType = "non-interruptive"
+
 	BeforeEach(func() {
 		os.Setenv("CISCO_RECONNECTION_TIMEOUT_IN_SECONDS", "8")
 		os.Setenv("CISCO_BOOT_TIME_IN_SECONDS", "0")
@@ -22,7 +24,7 @@ var _ = Describe("Cisco", func() {
 				Runner: &fake.FakeRunner{FailCopyCommand: true},
 			}
 
-			err := ciscoSwitch.Update("1.1.1.1/test.bin")
+			err := ciscoSwitch.Update(defaultUpdateSwitchType, "1.1.1.1/test.bin")
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(ContainSubstring("error copying image from remote"))
 		})
@@ -34,7 +36,7 @@ var _ = Describe("Cisco", func() {
 				Runner: &fake.FakeRunner{FailInstallCommand: true},
 			}
 
-			err := ciscoSwitch.Update("1.1.1.1/test.bin")
+			err := ciscoSwitch.Update(defaultUpdateSwitchType, "1.1.1.1/test.bin")
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(ContainSubstring("error install image"))
 		})
@@ -46,7 +48,7 @@ var _ = Describe("Cisco", func() {
 				Runner: &fake.FakeRunner{FailReconnecting: true},
 			}
 
-			err := ciscoSwitch.Update("1.1.1.1/test.bin")
+			err := ciscoSwitch.Update(defaultUpdateSwitchType, "1.1.1.1/test.bin")
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(ContainSubstring("timeout connecting to switch after update"))
 		})
@@ -58,7 +60,7 @@ var _ = Describe("Cisco", func() {
 				Runner: &fake.FakeRunner{FailShowVersionCommand: true},
 			}
 
-			err := ciscoSwitch.Update("1.1.1.1/test.bin")
+			err := ciscoSwitch.Update(defaultUpdateSwitchType, "1.1.1.1/test.bin")
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(ContainSubstring("failed to find the expected version"))
 		})
@@ -70,8 +72,21 @@ var _ = Describe("Cisco", func() {
 				Runner: &fake.FakeRunner{SuccessShowVersion: true},
 			}
 
-			err := ciscoSwitch.Update("1.1.1.1/test.bin")
+			err := ciscoSwitch.Update(defaultUpdateSwitchType, "1.1.1.1/test.bin")
 			Expect(err).ToNot(HaveOccurred())
+		})
+	})
+
+	Context("when the update type is interruptive", func() {
+		It("should run install all with interruptive", func() {
+			fakeRunner := &fake.FakeRunner{SuccessShowVersion: true}
+			ciscoSwitch := cisco.Switch{
+				Runner: fakeRunner,
+			}
+
+			err := ciscoSwitch.Update("interruptive", "1.1.1.1/test.bin")
+			Expect(err).ToNot(HaveOccurred())
+			Expect(fakeRunner.InstallCommand).To(ContainSubstring(" interruptive"))
 		})
 	})
 })

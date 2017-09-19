@@ -17,9 +17,10 @@ type Switch struct {
 	Runner nexus.CommandRunner
 }
 
-func (c *Switch) Update(imageURL string) error {
+func (c *Switch) Update(updateType, imageURL string) error {
 	imageFileName := fmt.Sprintf("%s-%s", uuid.New().String(), path.Base(imageURL))
 	fmt.Println("filename", imageFileName)
+
 	copyCmd := fmt.Sprintf("copy %s bootflash:%s vrf management", imageURL, imageFileName)
 	fmt.Println("starting copy")
 	_, err := c.Runner.Run(copyCmd, 0)
@@ -27,7 +28,13 @@ func (c *Switch) Update(imageURL string) error {
 		return fmt.Errorf("error copying image from remote: %+v", err)
 	}
 
-	installCmd := fmt.Sprintf("install all nxos bootflash:%s non-interruptive", imageFileName)
+	var installCmd string
+	if updateType == "non-interruptive" {
+		installCmd = fmt.Sprintf("install all nxos bootflash:%s non-interruptive", imageFileName)
+	} else if updateType == "interruptive" {
+		installCmd = fmt.Sprintf("install all nxos bootflash:%s interruptive", imageFileName)
+	}
+
 	fmt.Println("starting installation")
 	_, err = c.Runner.Run(installCmd, 0)
 	if err != nil {

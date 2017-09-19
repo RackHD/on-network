@@ -10,6 +10,7 @@ import (
 type FakeRunner struct {
 	FailCopyCommand        bool
 	FailInstallCommand     bool
+	InstallCommand         string
 	FailReconnecting       bool
 	FailShowVersionCommand bool
 	SuccessShowVersion     bool
@@ -21,8 +22,12 @@ func (fr *FakeRunner) Run(command string, timeout time.Duration) (string, error)
 		return "", errors.New(1, "fake copy command failed")
 	}
 
-	if strings.Contains(command, "install") && fr.FailInstallCommand {
-		return "", errors.New(2, "fake install command failed")
+	if strings.Contains(command, "install") {
+		fr.InstallCommand = command
+
+		if fr.FailInstallCommand {
+			return "", errors.New(2, "fake install command failed")
+		}
 	}
 
 	if strings.Contains(command, "show") && fr.FailReconnecting {
