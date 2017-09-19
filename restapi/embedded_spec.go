@@ -126,7 +126,8 @@ func init() {
         "username",
         "password",
         "imageURL",
-        "switchType"
+        "switchType",
+        "updateType"
       ],
       "properties": {
         "imageURL": {
@@ -139,6 +140,9 @@ func init() {
           "type": "string"
         },
         "switchType": {
+          "type": "string"
+        },
+        "updateType": {
           "type": "string"
         },
         "username": {
