@@ -30,13 +30,13 @@ type UpdateSwitch struct {
 	// Required: true
 	Password *string `json:"password"`
 
+	// switch model
+	// Required: true
+	SwitchModel *string `json:"switchModel"`
+
 	// switch type
 	// Required: true
 	SwitchType *string `json:"switchType"`
-
-	// update type
-	// Required: true
-	UpdateType *string `json:"updateType"`
 
 	// username
 	// Required: true
@@ -49,9 +49,9 @@ type UpdateSwitch struct {
 
 /* polymorph UpdateSwitch password false */
 
-/* polymorph UpdateSwitch switchType false */
+/* polymorph UpdateSwitch switchModel false */
 
-/* polymorph UpdateSwitch updateType false */
+/* polymorph UpdateSwitch switchType false */
 
 /* polymorph UpdateSwitch username false */
 
@@ -74,12 +74,12 @@ func (m *UpdateSwitch) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateSwitchType(formats); err != nil {
+	if err := m.validateSwitchModel(formats); err != nil {
 		// prop
 		res = append(res, err)
 	}
 
-	if err := m.validateUpdateType(formats); err != nil {
+	if err := m.validateSwitchType(formats); err != nil {
 		// prop
 		res = append(res, err)
 	}
@@ -122,18 +122,18 @@ func (m *UpdateSwitch) validatePassword(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *UpdateSwitch) validateSwitchType(formats strfmt.Registry) error {
+func (m *UpdateSwitch) validateSwitchModel(formats strfmt.Registry) error {
 
-	if err := validate.Required("switchType", "body", m.SwitchType); err != nil {
+	if err := validate.Required("switchModel", "body", m.SwitchModel); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (m *UpdateSwitch) validateUpdateType(formats strfmt.Registry) error {
+func (m *UpdateSwitch) validateSwitchType(formats strfmt.Registry) error {
 
-	if err := validate.Required("updateType", "body", m.UpdateType); err != nil {
+	if err := validate.Required("switchType", "body", m.SwitchType); err != nil {
 		return err
 	}
 

@@ -43,7 +43,7 @@ var _ = Describe("UpdateSwitch", func() {
 				"password": "test",
 				"imageURL": "test",
 				"switchType": "cisco",
-				"updateType": "non-interruptive"
+				"switchModel": "Nexus3000 C3164PQ Chassis"
 			}`)
 
 			req, err := http.NewRequest("POST", serverURL+"/updateSwitch", bytes.NewBuffer(jsonBody))

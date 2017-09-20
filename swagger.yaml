@@ -39,7 +39,7 @@ definitions:
     - password
     - imageURL
     - switchType
-    - updateType
+    - switchModel
     properties:
       ip:
         type: string
@@ -51,7 +51,7 @@ definitions:
         type: string
       switchType:
         type: string
-      updateType:
+      switchModel:
         type: string
 
 securityDefinitions:
