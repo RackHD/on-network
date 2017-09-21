@@ -19,7 +19,6 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
-
 	"github.com/RackHD/on-network/restapi/operations/about"
 	"github.com/RackHD/on-network/restapi/operations/update_switch"
 )
@@ -39,7 +38,6 @@ func NewOnNetworkAPI(spec *loads.Document) *OnNetworkAPI {
 		BearerAuthenticator: security.BearerAuth,
 		JSONConsumer:        runtime.JSONConsumer(),
 		JSONProducer:        runtime.JSONProducer(),
-
 		AboutAboutGetHandler: about.AboutGetHandlerFunc(func(params about.AboutGetParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation AboutAboutGet has not yet been implemented")
 		}),
@@ -51,11 +49,11 @@ func NewOnNetworkAPI(spec *loads.Document) *OnNetworkAPI {
 		APIKeyHeaderAuth: func(token string) (interface{}, error) {
 			return nil, errors.NotImplemented("api key auth (APIKeyHeader) authorization from header param [authorization] has not yet been implemented")
 		},
+
 		// default authorizer is authorized meaning no requests are blocked
 		APIAuthorizer: security.Authorized(),
 	}
 }
-
 
 /*OnNetworkAPI the on network API */
 type OnNetworkAPI struct {
@@ -87,7 +85,6 @@ type OnNetworkAPI struct {
 	// it performs authentication based on an api key authorization provided in the header
 	APIKeyHeaderAuth func(string) (interface{}, error)
 
-
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
 
@@ -95,7 +92,6 @@ type OnNetworkAPI struct {
 	AboutAboutGetHandler about.AboutGetHandler
 	// UpdateSwitchUpdateSwitchHandler sets the operation handler for the update switch operation
 	UpdateSwitchUpdateSwitchHandler update_switch.UpdateSwitchHandler
-
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -110,7 +106,6 @@ type OnNetworkAPI struct {
 
 	// User defined logger function.
 	Logger func(string, ...interface{})
-
 }
 
 // SetDefaultProduces sets the default produces media type
@@ -164,7 +159,6 @@ func (o *OnNetworkAPI) Validate() error {
 		unregistered = append(unregistered, "AuthorizationAuth")
 	}
 
-
 	if o.AboutAboutGetHandler == nil {
 		unregistered = append(unregistered, "about.AboutGetHandler")
 	}
@@ -202,14 +196,12 @@ func (o *OnNetworkAPI) AuthenticatorsFor(schemes map[string]spec.SecurityScheme)
 
 }
 
-
 // Authorizer returns the registered authorizer
 func (o *OnNetworkAPI) Authorizer() runtime.Authorizer {
 
 	return o.APIAuthorizer
 
 }
-
 
 // ConsumersFor gets the consumers for the specified media types
 func (o *OnNetworkAPI) ConsumersFor(mediaTypes []string) map[string]runtime.Consumer {
@@ -278,7 +270,6 @@ func (o *OnNetworkAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-
 	o.handlers["GET"]["/about"] = about.NewAboutGet(o.context, o.AboutAboutGetHandler)
 
 	if o.handlers["POST"] == nil {

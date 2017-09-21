@@ -30,6 +30,10 @@ type UpdateSwitch struct {
 	// Required: true
 	Password *string `json:"password"`
 
+	// switch model
+	// Required: true
+	SwitchModel *string `json:"switchModel"`
+
 	// switch type
 	// Required: true
 	SwitchType *string `json:"switchType"`
@@ -44,6 +48,8 @@ type UpdateSwitch struct {
 /* polymorph UpdateSwitch ip false */
 
 /* polymorph UpdateSwitch password false */
+
+/* polymorph UpdateSwitch switchModel false */
 
 /* polymorph UpdateSwitch switchType false */
 
@@ -64,6 +70,11 @@ func (m *UpdateSwitch) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validatePassword(formats); err != nil {
+		// prop
+		res = append(res, err)
+	}
+
+	if err := m.validateSwitchModel(formats); err != nil {
 		// prop
 		res = append(res, err)
 	}
@@ -105,6 +116,15 @@ func (m *UpdateSwitch) validateIP(formats strfmt.Registry) error {
 func (m *UpdateSwitch) validatePassword(formats strfmt.Registry) error {
 
 	if err := validate.Required("password", "body", m.Password); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *UpdateSwitch) validateSwitchModel(formats strfmt.Registry) error {
+
+	if err := validate.Required("switchModel", "body", m.SwitchModel); err != nil {
 		return err
 	}
 

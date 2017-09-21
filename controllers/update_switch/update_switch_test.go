@@ -1,15 +1,16 @@
 package update_switch_test
 
 import (
-	. "github.com/RackHD/on-network/controllers/update_switch"
-
 	"bytes"
 	"encoding/json"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 
+	. "github.com/RackHD/on-network/controllers/update_switch"
 	"github.com/RackHD/on-network/models"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -25,11 +26,15 @@ func (t TestProducer) Produce(w io.Writer, data interface{}) error {
 var _ = Describe("UpdateSwitch", func() {
 	var prod TestProducer
 	var buff *httptest.ResponseRecorder
+
 	BeforeEach(func() {
 		// Set up receiver to mock out where response would go
 		prod = TestProducer{}
 		buff = httptest.NewRecorder()
+
+		os.Setenv("SWITCH_MODELS_FILE_PATH", "../../switch_operations/cisco/fake/switchModels.yml")
 	})
+
 	Context("When a message is routed to the /updateSwitch handler", func() {
 		It("info API should return 'status OK'", func() {
 			// Create on-network api about
@@ -40,7 +45,8 @@ var _ = Describe("UpdateSwitch", func() {
 				"username": "test",
 				"password": "test",
 				"imageURL": "test",
-				"switchType": "cisco"
+				"switchType": "cisco",
+				"switchModel": "Nexus3000 C3164PQ Chassis"
 			}`)
 
 			req, err := http.NewRequest("POST", serverURL+"/updateSwitch", bytes.NewBuffer(jsonBody))

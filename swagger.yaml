@@ -39,6 +39,7 @@ definitions:
     - password
     - imageURL
     - switchType
+    - switchModel
     properties:
       ip:
         type: string
@@ -49,6 +50,8 @@ definitions:
       imageURL:
         type: string
       switchType:
+        type: string
+      switchModel:
         type: string
 
 securityDefinitions:
@@ -105,5 +108,3 @@ paths:
 #            schema:
 #              $ref: '#/definitions/About'
 #
-
-
