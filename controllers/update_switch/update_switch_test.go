@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 
 	. "github.com/RackHD/on-network/controllers/update_switch"
 	"github.com/RackHD/on-network/models"
@@ -30,6 +31,8 @@ var _ = Describe("UpdateSwitch", func() {
 		// Set up receiver to mock out where response would go
 		prod = TestProducer{}
 		buff = httptest.NewRecorder()
+
+		os.Setenv("SWITCH_MODELS_FILE_PATH", "../../switch_operations/cisco/fake/switchModels.yml")
 	})
 
 	Context("When a message is routed to the /updateSwitch handler", func() {
