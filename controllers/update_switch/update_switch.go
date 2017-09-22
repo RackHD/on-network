@@ -28,12 +28,12 @@ type ISwitch interface {
 func MiddleWare(r *http.Request, body *models.UpdateSwitch) middleware.Responder {
 	var client ISwitch
 
-	if *body.SwitchType == "cisco" {
+	if *body.Endpoint.SwitchType == "cisco" {
 		client = &cisco.Switch{
 			Runner: &nexus.Runner{
-				IP:       *body.IP,
-				Username: *body.Username,
-				Password: *body.Password,
+				IP:       *body.Endpoint.IP,
+				Username: *body.Endpoint.Username,
+				Password: *body.Endpoint.Password,
 			},
 		}
 	}

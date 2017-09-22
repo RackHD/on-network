@@ -41,11 +41,13 @@ var _ = Describe("UpdateSwitch", func() {
 			serverURL := "http://localhost:8080"
 
 			jsonBody := []byte(`{
-				"ip": "test",
-				"username": "test",
-				"password": "test",
+				"endpoint": {
+					"ip": "test",
+					"username": "test",
+					"password": "test",
+					"switchType": "cisco"
+				},
 				"imageURL": "test",
-				"switchType": "cisco",
 				"switchModel": "Nexus3000 C3164PQ Chassis"
 			}`)
 

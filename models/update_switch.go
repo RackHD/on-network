@@ -18,58 +18,35 @@ import (
 
 type UpdateSwitch struct {
 
+	// endpoint
+	// Required: true
+	Endpoint *SwitchEndpoint `json:"endpoint"`
+
 	// image URL
 	// Required: true
 	ImageURL *string `json:"imageURL"`
 
-	// ip
-	// Required: true
-	IP *string `json:"ip"`
-
-	// password
-	// Required: true
-	Password *string `json:"password"`
-
 	// switch model
 	// Required: true
 	SwitchModel *string `json:"switchModel"`
-
-	// switch type
-	// Required: true
-	SwitchType *string `json:"switchType"`
-
-	// username
-	// Required: true
-	Username *string `json:"username"`
 }
+
+/* polymorph UpdateSwitch endpoint false */
 
 /* polymorph UpdateSwitch imageURL false */
 
-/* polymorph UpdateSwitch ip false */
-
-/* polymorph UpdateSwitch password false */
-
 /* polymorph UpdateSwitch switchModel false */
-
-/* polymorph UpdateSwitch switchType false */
-
-/* polymorph UpdateSwitch username false */
 
 // Validate validates this update switch
 func (m *UpdateSwitch) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateEndpoint(formats); err != nil {
+		// prop
+		res = append(res, err)
+	}
+
 	if err := m.validateImageURL(formats); err != nil {
-		// prop
-		res = append(res, err)
-	}
-
-	if err := m.validateIP(formats); err != nil {
-		// prop
-		res = append(res, err)
-	}
-
-	if err := m.validatePassword(formats); err != nil {
 		// prop
 		res = append(res, err)
 	}
@@ -79,19 +56,28 @@ func (m *UpdateSwitch) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateSwitchType(formats); err != nil {
-		// prop
-		res = append(res, err)
-	}
-
-	if err := m.validateUsername(formats); err != nil {
-		// prop
-		res = append(res, err)
-	}
-
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *UpdateSwitch) validateEndpoint(formats strfmt.Registry) error {
+
+	if err := validate.Required("endpoint", "body", m.Endpoint); err != nil {
+		return err
+	}
+
+	if m.Endpoint != nil {
+
+		if err := m.Endpoint.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("endpoint")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -104,45 +90,9 @@ func (m *UpdateSwitch) validateImageURL(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *UpdateSwitch) validateIP(formats strfmt.Registry) error {
-
-	if err := validate.Required("ip", "body", m.IP); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *UpdateSwitch) validatePassword(formats strfmt.Registry) error {
-
-	if err := validate.Required("password", "body", m.Password); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (m *UpdateSwitch) validateSwitchModel(formats strfmt.Registry) error {
 
 	if err := validate.Required("switchModel", "body", m.SwitchModel); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *UpdateSwitch) validateSwitchType(formats strfmt.Registry) error {
-
-	if err := validate.Required("switchType", "body", m.SwitchType); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *UpdateSwitch) validateUsername(formats strfmt.Registry) error {
-
-	if err := validate.Required("username", "body", m.Username); err != nil {
 		return err
 	}
 

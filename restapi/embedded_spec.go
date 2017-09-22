@@ -119,33 +119,44 @@ func init() {
         }
       }
     },
-    "UpdateSwitch": {
+    "SwitchEndpoint": {
       "type": "object",
       "required": [
         "ip",
         "username",
         "password",
-        "imageURL",
-        "switchType",
-        "switchModel"
+        "switchType"
       ],
       "properties": {
-        "imageURL": {
-          "type": "string"
-        },
         "ip": {
           "type": "string"
         },
         "password": {
           "type": "string"
         },
-        "switchModel": {
-          "type": "string"
-        },
         "switchType": {
           "type": "string"
         },
         "username": {
+          "type": "string"
+        }
+      }
+    },
+    "UpdateSwitch": {
+      "type": "object",
+      "required": [
+        "endpoint",
+        "imageURL",
+        "switchModel"
+      ],
+      "properties": {
+        "endpoint": {
+          "$ref": "#/definitions/SwitchEndpoint"
+        },
+        "imageURL": {
+          "type": "string"
+        },
+        "switchModel": {
           "type": "string"
         }
       }
