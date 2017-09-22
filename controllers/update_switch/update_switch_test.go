@@ -12,6 +12,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"os"
 )
 
 type TestProducer struct{}
@@ -30,6 +31,8 @@ var _ = Describe("UpdateSwitch", func() {
 		// Set up receiver to mock out where response would go
 		prod = TestProducer{}
 		buff = httptest.NewRecorder()
+
+		os.Setenv("SWITCH_MODELS_FILE_PATH", "../../switch_operations/cisco/fake/switchModels.yml")
 	})
 
 	Context("When a message is routed to the /updateSwitch handler", func() {
