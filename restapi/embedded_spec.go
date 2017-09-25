@@ -47,6 +47,36 @@ func init() {
         }
       }
     },
+    "/switchConfig": {
+      "post": {
+        "description": "Get switch running config",
+        "tags": [
+          "/switchConfig"
+        ],
+        "summary": "Get switch running config",
+        "operationId": "switchConfig",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/SwitchConfig"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully returned switch running config"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/updateSwitch": {
       "post": {
         "description": "Update switch firmware based on specified switch type and firmware image",
@@ -116,6 +146,17 @@ func init() {
         },
         "message": {
           "type": "string"
+        }
+      }
+    },
+    "SwitchConfig": {
+      "type": "object",
+      "required": [
+        "endpoint"
+      ],
+      "properties": {
+        "endpoint": {
+          "$ref": "#/definitions/SwitchEndpoint"
         }
       }
     },

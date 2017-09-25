@@ -8,6 +8,7 @@ import (
 )
 
 type FakeRunner struct {
+	// Update
 	FailCopyCommand        bool
 	FailInstallCommand     bool
 	InstallCommand         string
@@ -15,6 +16,9 @@ type FakeRunner struct {
 	FailShowVersionCommand bool
 	SuccessShowVersion     bool
 	ImageFileName          string
+
+	// GetConfig
+	FailShowConfigCommand bool
 }
 
 func (fr *FakeRunner) Run(command string, timeout time.Duration) (string, error) {
@@ -47,6 +51,13 @@ func (fr *FakeRunner) Run(command string, timeout time.Duration) (string, error)
 		if fr.SuccessShowVersion {
 			return fr.ImageFileName, nil
 		}
+	}
+
+	if strings.Contains(command, "show running-config") {
+		if fr.FailShowConfigCommand {
+			return "", errors.New(4, "fake show config command failed")
+		}
+		return "{\"config\":\"empty\"}", nil
 	}
 
 	return "", nil

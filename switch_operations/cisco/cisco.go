@@ -86,3 +86,13 @@ func (c *Switch) Update(switchModel, imageURL string) error {
 		}
 	}
 }
+
+// GetConfig returns running-config of given switch
+func (c *Switch) GetConfig() (string, error) {
+	config, err := c.Runner.Run("show running-config", 0)
+	if err != nil {
+		return "", fmt.Errorf("error running show running-config command: %+v", err)
+	}
+
+	return config, nil
+}
