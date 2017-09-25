@@ -62,7 +62,8 @@ func (c *UpdateSwitch) notSupported(rw http.ResponseWriter, rp runtime.Producer)
 
 func (c *UpdateSwitch) postUpdateSwitch(rw http.ResponseWriter, rp runtime.Producer) {
 	err := c.Client.Update(c.SwitchModel, c.ImageURL)
-	if err != nil {
+
+ 	if err != nil {
 		rp.Produce(rw, fmt.Sprintf("failed to update switch: %+v", err))
 		return
 	}

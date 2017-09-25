@@ -13,6 +13,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"os"
 )
 
 type TestProducer struct{}

@@ -19,6 +19,7 @@ var _ = Describe("Cisco", func() {
 		os.Setenv("SWITCH_MODELS_FILE_PATH", "fake/switchModels.yml")
 		os.Setenv("CISCO_RECONNECTION_TIMEOUT_IN_SECONDS", "8")
 		os.Setenv("CISCO_BOOT_TIME_IN_SECONDS", "0")
+		os.Setenv("CISCO_INSTALL_TIME_IN_MINUTES", "1")
 	})
 
 	Context("When copy command fails", func() {
@@ -82,7 +83,7 @@ var _ = Describe("Cisco", func() {
 
 	Context("when the update type is non-disruptive", func() {
 		It("should run install all with non-disruptive", func() {
-			fakeRunner := &fake.FakeRunner{SuccessShowVersion: true}
+			fakeRunner := &fake.FakeRunner{TimeoutInstall: true}
 			ciscoSwitch := cisco.Switch{
 				Runner: fakeRunner,
 			}

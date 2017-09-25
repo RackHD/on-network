@@ -40,14 +40,48 @@ func (c *Switch) Update(switchModel, imageURL string) error {
 
 	if updateType == "Disruptive" {
 		installCmd = fmt.Sprintf("install all nxos bootflash:%s non-interruptive", imageFileName)
+		fmt.Println("starting disruptive installation")
+		_, err = c.Runner.Run(installCmd, 0)
+		if err != nil {
+			return fmt.Errorf("error install image: %+v", err)
+		}
+
 	} else if updateType == "NonDisruptive" {
 		installCmd = fmt.Sprintf("install all nxos bootflash:%s non-disruptive non-interruptive", imageFileName)
-	}
+		fmt.Println("starting non-disruptive installation ")
+		_, err = c.Runner.Run(installCmd, 2 * time.Second)
+		if err != nil {
 
-	fmt.Println("starting installation ", installCmd)
-	_, err = c.Runner.Run(installCmd, 0)
-	if err != nil {
-		return fmt.Errorf("error install image: %+v", err)
+			i, err := strconv.Atoi(os.Getenv("CISCO_INSTALL_TIME_IN_MINUTES"))
+			if err != nil {
+				panic("CISCO_INSTALL_TIME_IN_MINUTES was not set as an interger!")
+			}
+			installTimeDuration := time.Duration(i) * time.Minute
+
+			rebootTimeout :=time.NewTimer(installTimeDuration)
+			rebootTick := time.NewTicker(5 *time.Second)
+			isBreak := false
+			for {
+				select {
+				case <-rebootTimeout.C:
+					return errors.New(2, "Something went wrong during installation, switch never rebooted" )
+				case <-rebootTick.C:
+					_, err := c.Runner.Run("show version", time.Duration(6*time.Second))
+
+					if err != nil {
+						fmt.Println("Installation completed, and switch is rebooting.")
+						rebootTimeout.Stop()
+						rebootTick.Stop()
+						isBreak=true
+					}
+				}
+				if (isBreak) {
+					break
+				}
+			}
+		} else {
+			return errors.New(2, "Something went wrong during installation." )
+		}
 	}
 
 	b, err := strconv.Atoi(os.Getenv("CISCO_BOOT_TIME_IN_SECONDS"))
@@ -79,6 +113,7 @@ func (c *Switch) Update(switchModel, imageURL string) error {
 			body, err := c.Runner.Run("show version", time.Duration(2*time.Second))
 			if err == nil {
 				if strings.Contains(body, imageFileName) == true {
+					fmt.Println("Successfully updgraded to the right version.")
 					return nil
 				}
 				return errors.New(3, "failed to find the expected version")
