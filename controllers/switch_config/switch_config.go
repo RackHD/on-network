@@ -1,4 +1,4 @@
-package update_switch
+package switch_config
 
 import (
 	"fmt"
@@ -13,16 +13,16 @@ import (
 	"github.com/RackHD/on-network/switch_operations/cisco/nexus"
 )
 
-// UpdateSwitch is a struct for the http objects
-type UpdateSwitch struct {
-	Request     *http.Request
-	Client      switch_operations.ISwitch
-	SwitchModel string
-	ImageURL    string
+// SwitchConfig is a struct for the http objects
+type SwitchConfig struct {
+	Request *http.Request
+	Client  switch_operations.ISwitch
 }
 
 // MiddleWare handles the route call
-func MiddleWare(r *http.Request, body *models.UpdateSwitch) middleware.Responder {
+func MiddleWare(r *http.Request, body *models.SwitchConfig) middleware.Responder {
+	fmt.Println("postSwitchConfig")
+
 	var client switch_operations.ISwitch
 
 	if *body.Endpoint.SwitchType == "cisco" {
@@ -35,37 +35,34 @@ func MiddleWare(r *http.Request, body *models.UpdateSwitch) middleware.Responder
 		}
 	}
 
-	return &UpdateSwitch{
-		Request:     r,
-		Client:      client,
-		SwitchModel: *body.SwitchModel,
-		ImageURL:    *body.ImageURL,
+	return &SwitchConfig{
+		Request: r,
+		Client:  client,
 	}
 }
 
 // WriteResponse implements the CRUD logic behind the /credentials route
-func (c *UpdateSwitch) WriteResponse(rw http.ResponseWriter, rp runtime.Producer) {
+func (c *SwitchConfig) WriteResponse(rw http.ResponseWriter, rp runtime.Producer) {
 	switch c.Request.Method {
 	case http.MethodPost:
-		c.postUpdateSwitch(rw, rp)
+		c.postSwitchConfig(rw, rp)
 	default:
 		c.notSupported(rw, rp)
 	}
 }
 
-func (c *UpdateSwitch) notSupported(rw http.ResponseWriter, rp runtime.Producer) {
+func (c *SwitchConfig) notSupported(rw http.ResponseWriter, rp runtime.Producer) {
 	rw.WriteHeader(http.StatusNotImplemented)
 }
 
-func (c *UpdateSwitch) postUpdateSwitch(rw http.ResponseWriter, rp runtime.Producer) {
-	err := c.Client.Update(c.SwitchModel, c.ImageURL)
-
- 	if err != nil {
+func (c *SwitchConfig) postSwitchConfig(rw http.ResponseWriter, rp runtime.Producer) {
+	config, err := c.Client.GetConfig()
+	if err != nil {
 		rp.Produce(rw, fmt.Sprintf("failed to update switch: %+v", err))
 		return
 	}
 
-	if err := rp.Produce(rw, fmt.Sprintf("succeeded to update switch!!!")); err != nil {
+	if err := rp.Produce(rw, config); err != nil {
 		panic(err)
 	}
 }

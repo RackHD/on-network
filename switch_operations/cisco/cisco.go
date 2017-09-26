@@ -31,7 +31,7 @@ func (c *Switch) Update(switchModel, imageURL string) error {
 
 	copyCmd := fmt.Sprintf("copy %s bootflash:%s vrf management", imageURL, imageFileName)
 	fmt.Println("starting copy")
-	_, err = c.Runner.Run(copyCmd, 0)
+	_, err = c.Runner.Run(copyCmd, "cli",0)
 	if err != nil {
 		return fmt.Errorf("error copying image from remote: %+v", err)
 	}
@@ -41,7 +41,7 @@ func (c *Switch) Update(switchModel, imageURL string) error {
 	if updateType == "Disruptive" {
 		installCmd = fmt.Sprintf("install all nxos bootflash:%s non-interruptive", imageFileName)
 		fmt.Println("starting disruptive installation")
-		_, err = c.Runner.Run(installCmd, 0)
+		_, err = c.Runner.Run(installCmd,"cli", 0)
 		if err != nil {
 			return fmt.Errorf("error install image: %+v", err)
 		}
@@ -49,7 +49,7 @@ func (c *Switch) Update(switchModel, imageURL string) error {
 	} else if updateType == "NonDisruptive" {
 		installCmd = fmt.Sprintf("install all nxos bootflash:%s non-disruptive non-interruptive", imageFileName)
 		fmt.Println("starting non-disruptive installation ")
-		_, err = c.Runner.Run(installCmd, 2 * time.Second)
+		_, err = c.Runner.Run(installCmd, "cli",2 * time.Second)
 		if err != nil {
 
 			i, err := strconv.Atoi(os.Getenv("CISCO_INSTALL_TIME_IN_MINUTES"))
@@ -66,7 +66,7 @@ func (c *Switch) Update(switchModel, imageURL string) error {
 				case <-rebootTimeout.C:
 					return errors.New(2, "Something went wrong during installation, switch never rebooted" )
 				case <-rebootTick.C:
-					_, err := c.Runner.Run("show version", time.Duration(6*time.Second))
+					_, err := c.Runner.Run("show version", "cli",time.Duration(6*time.Second))
 
 					if err != nil {
 						fmt.Println("Installation completed, and switch is rebooting.")
@@ -83,7 +83,6 @@ func (c *Switch) Update(switchModel, imageURL string) error {
 			return errors.New(2, "Something went wrong during installation." )
 		}
 	}
-
 	b, err := strconv.Atoi(os.Getenv("CISCO_BOOT_TIME_IN_SECONDS"))
 	if err != nil {
 		panic("CISCO_BOOT_TIME_IN_SECONDS was not set as an interger!")
@@ -110,7 +109,7 @@ func (c *Switch) Update(switchModel, imageURL string) error {
 			return errors.New(2, "timeout connecting to switch after update.")
 
 		case <-tick:
-			body, err := c.Runner.Run("show version", time.Duration(2*time.Second))
+			body, err := c.Runner.Run("show version","cli", time.Duration(2*time.Second))
 			if err == nil {
 				if strings.Contains(body, imageFileName) == true {
 					fmt.Println("Successfully updgraded to the right version.")
@@ -120,4 +119,15 @@ func (c *Switch) Update(switchModel, imageURL string) error {
 			}
 		}
 	}
+}
+
+// GetConfig returns running-config of given switch
+func (c *Switch) GetConfig() (string, error) {
+	result, err := c.Runner.Run("show running-config", "cli_ascii", 0)
+	config := result
+	if err != nil {
+		return "", fmt.Errorf("error running show running-config command: %+v", err)
+	}
+
+	return config, nil
 }

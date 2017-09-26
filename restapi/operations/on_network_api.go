@@ -20,6 +20,7 @@ import (
 	"github.com/go-openapi/swag"
 
 	"github.com/RackHD/on-network/restapi/operations/about"
+	"github.com/RackHD/on-network/restapi/operations/switch_config"
 	"github.com/RackHD/on-network/restapi/operations/update_switch"
 )
 
@@ -40,6 +41,9 @@ func NewOnNetworkAPI(spec *loads.Document) *OnNetworkAPI {
 		JSONProducer:        runtime.JSONProducer(),
 		AboutAboutGetHandler: about.AboutGetHandlerFunc(func(params about.AboutGetParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation AboutAboutGet has not yet been implemented")
+		}),
+		SwitchConfigSwitchConfigHandler: switch_config.SwitchConfigHandlerFunc(func(params switch_config.SwitchConfigParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation SwitchConfigSwitchConfig has not yet been implemented")
 		}),
 		UpdateSwitchUpdateSwitchHandler: update_switch.UpdateSwitchHandlerFunc(func(params update_switch.UpdateSwitchParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation UpdateSwitchUpdateSwitch has not yet been implemented")
@@ -90,6 +94,8 @@ type OnNetworkAPI struct {
 
 	// AboutAboutGetHandler sets the operation handler for the about get operation
 	AboutAboutGetHandler about.AboutGetHandler
+	// SwitchConfigSwitchConfigHandler sets the operation handler for the switch config operation
+	SwitchConfigSwitchConfigHandler switch_config.SwitchConfigHandler
 	// UpdateSwitchUpdateSwitchHandler sets the operation handler for the update switch operation
 	UpdateSwitchUpdateSwitchHandler update_switch.UpdateSwitchHandler
 
@@ -161,6 +167,10 @@ func (o *OnNetworkAPI) Validate() error {
 
 	if o.AboutAboutGetHandler == nil {
 		unregistered = append(unregistered, "about.AboutGetHandler")
+	}
+
+	if o.SwitchConfigSwitchConfigHandler == nil {
+		unregistered = append(unregistered, "switch_config.SwitchConfigHandler")
 	}
 
 	if o.UpdateSwitchUpdateSwitchHandler == nil {
@@ -271,6 +281,11 @@ func (o *OnNetworkAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/about"] = about.NewAboutGet(o.context, o.AboutAboutGetHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/switchConfig"] = switch_config.NewSwitchConfig(o.context, o.SwitchConfigSwitchConfigHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
