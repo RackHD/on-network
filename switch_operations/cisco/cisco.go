@@ -12,7 +12,6 @@ import (
 	"github.com/RackHD/on-network/switch_operations/store"
 	"github.com/go-openapi/errors"
 	"github.com/google/uuid"
-	//"github.com/revel/config"
 )
 
 type Switch struct {
@@ -125,7 +124,6 @@ func (c *Switch) Update(switchModel, imageURL string) error {
 // GetConfig returns running-config of given switch
 func (c *Switch) GetConfig() (string, error) {
 	result, err := c.Runner.Run("show running-config", "cli_ascii", 0)
-	//result, err := c.Runner.Run("show version", "cli", 0)
 	config := result
 	if err != nil {
 		return "", fmt.Errorf("error running show running-config command: %+v", err)
