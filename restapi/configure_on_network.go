@@ -11,10 +11,15 @@ import (
 	middleware "github.com/go-openapi/runtime/middleware"
 	graceful "github.com/tylerb/graceful"
 
-	"github.com/RackHD/on-network/controllers/about"
-	"github.com/RackHD/on-network/controllers/switch_config"
-	"github.com/RackHD/on-network/controllers/update_switch"
 	"github.com/RackHD/on-network/restapi/operations"
+
+	"github.com/RackHD/on-network/restapi/operations/about"
+	"github.com/RackHD/on-network/restapi/operations/update_switch"
+	"github.com/RackHD/on-network/restapi/operations/switch_config"
+
+	aboutctrl "github.com/RackHD/on-network/controllers/about"
+	updateswitchctrl "github.com/RackHD/on-network/controllers/update_switch"
+	configswitchctrl "github.com/RackHD/on-network/controllers/switch_config"
 )
 
 // This file is safe to edit. Once it exists it will not be overwritten
@@ -51,13 +56,16 @@ func configureAPI(api *operations.OnNetworkAPI) http.Handler {
 	// api.APIAuthorizer = security.Authorized()
 
 	api.AboutAboutGetHandler = about.AboutGetHandlerFunc(func(params about.AboutGetParams, principal interface{}) middleware.Responder {
-		return about.MiddleWare(params.HTTPRequest)
+		return aboutctrl.MiddleWare(params.HTTPRequest)
 	})
-	api.SwitchConfigSwitchConfigHandler = switch_config.SwitchConfigHandlerFunc(func(params switch_config.SwitchConfigParams, principal interface{}) middleware.Responder {
-		return update_switch.MiddleWare(params.HTTPRequest, params.Body)
-	})
+
+
 	api.UpdateSwitchUpdateSwitchHandler = update_switch.UpdateSwitchHandlerFunc(func(params update_switch.UpdateSwitchParams, principal interface{}) middleware.Responder {
-		return switch_config.MiddleWare(params.HTTPRequest, params.Body)
+		return updateswitchctrl.MiddleWare(params.HTTPRequest, params.Body)
+	})
+
+	api.SwitchConfigSwitchConfigHandler = switch_config.SwitchConfigHandlerFunc(func(params switch_config.SwitchConfigParams, principal interface{}) middleware.Responder {
+		return configswitchctrl.MiddleWare(params.HTTPRequest, params.Body)
 	})
 
 	api.ServerShutdown = func() {}

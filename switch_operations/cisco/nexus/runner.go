@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+
 )
 
 type Runner struct {
@@ -28,16 +29,27 @@ type CommandRunnerBody struct {
 	ID      int    `json:"id"`
 }
 
+type Result struct {
+	Message string `json:"msg"`
+	Body interface{} `json:"body"`
+}
+
+type CommandRunnerResponseBody struct {
+	JsonRpc string `json:"jsonrpc"`
+	Result  Result `json:"result"`
+	ID      int    `json:"id"`
+
+}
 type CopyCommand struct {
 	Src string
 	Dst string
 }
 
-func (nr *Runner) Run(command string, timeout time.Duration) (string, error) {
+func (nr *Runner) Run(command string, method string,   timeout time.Duration) (string, error) {
 	endpoint := fmt.Sprintf("http://%s/ins", nr.IP)
 
 	commandParam := Params{command, 1}
-	postBody := CommandRunnerBody{"2.0", "cli", commandParam, 1}
+	postBody := CommandRunnerBody{"2.0", method, commandParam, 1}
 	bodyBytes, err := json.Marshal(postBody)
 	if err != nil {
 		return "", fmt.Errorf("error marshaling command: %+v", err)
@@ -58,6 +70,7 @@ func (nr *Runner) Run(command string, timeout time.Duration) (string, error) {
 		client.Timeout = timeout
 	}
 	resp, err := client.Do(req)
+
 	if err != nil {
 		return "", fmt.Errorf("error executing request: %+v", err)
 	}
@@ -73,5 +86,17 @@ func (nr *Runner) Run(command string, timeout time.Duration) (string, error) {
 		return string(body), errors.New(errMsg)
 	}
 
-	return string(body), nil
+	var commonRunner CommandRunnerResponseBody
+	json.Unmarshal(body, &commonRunner)
+	if commonRunner.Result.Message != "" {
+		return commonRunner.Result.Message, nil
+	}else {
+		respInterface := commonRunner.Result.Body.(map[string]interface {})
+		var responseBodyString string
+		for key, value := range respInterface {
+			responseBodyString = fmt.Sprintf("%s\n %s:%s\n",responseBodyString,  key , value)
+
+		}
+		return string(responseBodyString), nil
+	}
 }

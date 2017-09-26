@@ -16,12 +16,17 @@ type FakeRunner struct {
 	FailShowVersionCommand bool
 	SuccessShowVersion     bool
 	ImageFileName          string
-
 	// GetConfig
 	FailShowConfigCommand bool
+
+	TimeoutInstall		   bool
+	IsShowVersion          bool
+
 }
 
-func (fr *FakeRunner) Run(command string, timeout time.Duration) (string, error) {
+func (fr *FakeRunner) Run(command string,method string,   timeout time.Duration) (string, error) {
+
+
 	if strings.Contains(command, "copy") {
 		fr.ImageFileName = strings.Split((strings.Split(command, " ")[2]), ":")[1]
 
@@ -35,6 +40,11 @@ func (fr *FakeRunner) Run(command string, timeout time.Duration) (string, error)
 
 		if fr.FailInstallCommand {
 			return "", errors.New(2, "fake install command failed")
+		}
+
+		if fr.TimeoutInstall {
+
+			return "", errors.New(2, "fake install command timedout")
 		}
 	}
 
@@ -50,6 +60,14 @@ func (fr *FakeRunner) Run(command string, timeout time.Duration) (string, error)
 
 		if fr.SuccessShowVersion {
 			return fr.ImageFileName, nil
+		}
+		if fr.TimeoutInstall {
+			if (fr.IsShowVersion == false) {
+				fr.IsShowVersion = true
+				return "", errors.New(2, "failed as switch is rebooting")
+			} else{
+				return fr.ImageFileName, nil
+			}
 		}
 	}
 

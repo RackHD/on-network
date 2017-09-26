@@ -3,5 +3,5 @@ package nexus
 import "time"
 
 type CommandRunner interface {
-	Run(string, time.Duration) (string, error)
+	Run(string,string, time.Duration) (string, error)
 }
