@@ -15,11 +15,13 @@ import (
 
 	"github.com/RackHD/on-network/restapi/operations/about"
 	"github.com/RackHD/on-network/restapi/operations/update_switch"
+	"github.com/RackHD/on-network/restapi/operations/switch_firmware"
 	"github.com/RackHD/on-network/restapi/operations/switch_config"
 
 	aboutctrl "github.com/RackHD/on-network/controllers/about"
 	updateswitchctrl "github.com/RackHD/on-network/controllers/update_switch"
 	configswitchctrl "github.com/RackHD/on-network/controllers/switch_config"
+	switchfirmwarectrl "github.com/RackHD/on-network/controllers/switch_firmware"
 )
 
 // This file is safe to edit. Once it exists it will not be overwritten
@@ -66,6 +68,10 @@ func configureAPI(api *operations.OnNetworkAPI) http.Handler {
 
 	api.SwitchConfigSwitchConfigHandler = switch_config.SwitchConfigHandlerFunc(func(params switch_config.SwitchConfigParams, principal interface{}) middleware.Responder {
 		return configswitchctrl.MiddleWare(params.HTTPRequest, params.Body)
+	})
+
+	api.SwitchFirmwareSwitchFirmwareHandler = switch_firmware.SwitchFirmwareHandlerFunc(func(params switch_firmware.SwitchFirmwareParams, principal interface{}) middleware.Responder {
+		return switchfirmwarectrl.MiddleWare(params.HTTPRequest, params.Body)
 	})
 
 	api.ServerShutdown = func() {}

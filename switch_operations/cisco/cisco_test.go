@@ -122,4 +122,30 @@ var _ = Describe("Cisco", func() {
 			})
 		})
 	})
+
+	Describe("GetFirmware", func() {
+		Context("when get firmware version command failed", func() {
+			It("should return error", func() {
+				ciscoSwitch := cisco.Switch{
+					Runner: &fake.FakeRunner{FailShowFirmwareVersionCommand: true},
+				}
+
+				_, err := ciscoSwitch.GetFirmware()
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("error running show version command"))
+			})
+		})
+
+		Context("when get firmware version command succeeded", func() {
+			It("should return firmware version", func() {
+				ciscoSwitch := cisco.Switch{
+					Runner: &fake.FakeRunner{},
+				}
+
+				firmware, err := ciscoSwitch.GetFirmware()
+				Expect(err).ToNot(HaveOccurred())
+				Expect(firmware).To(Equal("7.0(3)I5(2)"))
+			})
+		})
+	})
 })

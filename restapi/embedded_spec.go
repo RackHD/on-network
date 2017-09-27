@@ -60,13 +60,43 @@ func init() {
             "name": "body",
             "in": "body",
             "schema": {
-              "$ref": "#/definitions/SwitchConfig"
+              "$ref": "#/definitions/Switch"
             }
           }
         ],
         "responses": {
           "200": {
             "description": "Successfully returned switch running config"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/switchFirmware": {
+      "post": {
+        "description": "Get switch Firmware Version",
+        "tags": [
+          "/switchFirmware"
+        ],
+        "summary": "Get switch Firmware Version",
+        "operationId": "switchFirmware",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Switch"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully returned switch firmware version"
           },
           "default": {
             "description": "Error",
@@ -149,7 +179,7 @@ func init() {
         }
       }
     },
-    "SwitchConfig": {
+    "Switch": {
       "type": "object",
       "required": [
         "endpoint"

@@ -12,6 +12,7 @@ import (
 	"github.com/RackHD/on-network/switch_operations/store"
 	"github.com/go-openapi/errors"
 	"github.com/google/uuid"
+	"encoding/json"
 )
 
 type Switch struct {
@@ -130,4 +131,25 @@ func (c *Switch) GetConfig() (string, error) {
 	}
 
 	return config, nil
+}
+
+// GetFirmware returns Firmware Version of given switch
+func (c *Switch) GetFirmware() (string, error) {
+	result, err := c.Runner.Run("show version", "cli", 0)
+	if err != nil {
+		return "", fmt.Errorf("error running show version command: %+v", err)
+	}
+
+	var versionBody  nexus.CommandRunnerResponseBody
+
+	err = json.Unmarshal([]byte(result), &versionBody)
+	if err != nil {
+		return "", fmt.Errorf("error getting the result of show version: %+v", err)
+	}
+
+	respInterface := versionBody.Result.Body.(map[string] interface{})
+
+	version := respInterface["rr_sys_ver"]
+	return version.(string), nil
+
 }

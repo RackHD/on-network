@@ -1,4 +1,4 @@
-package switch_config
+package switch_firmware
 
 import (
 	"fmt"
@@ -14,14 +14,14 @@ import (
 )
 
 // SwitchConfig is a struct for the http objects
-type SwitchConfig struct {
+type SwitchFirmware struct {
 	Request *http.Request
 	Client  switch_operations.ISwitch
 }
 
 // MiddleWare handles the route call
 func MiddleWare(r *http.Request, body *models.Switch) middleware.Responder {
-	fmt.Println("postSwitchConfig")
+	fmt.Println("postSwitchFirmware")
 
 	var client switch_operations.ISwitch
 
@@ -35,34 +35,34 @@ func MiddleWare(r *http.Request, body *models.Switch) middleware.Responder {
 		}
 	}
 
-	return &SwitchConfig{
+	return &SwitchFirmware{
 		Request: r,
 		Client:  client,
 	}
 }
 
 // WriteResponse implements the CRUD logic behind the /credentials route
-func (c *SwitchConfig) WriteResponse(rw http.ResponseWriter, rp runtime.Producer) {
+func (c *SwitchFirmware) WriteResponse(rw http.ResponseWriter, rp runtime.Producer) {
 	switch c.Request.Method {
 	case http.MethodPost:
-		c.postSwitchConfig(rw, rp)
+		c.postSwitchFirmware(rw, rp)
 	default:
 		c.notSupported(rw, rp)
 	}
 }
 
-func (c *SwitchConfig) notSupported(rw http.ResponseWriter, rp runtime.Producer) {
+func (c *SwitchFirmware) notSupported(rw http.ResponseWriter, rp runtime.Producer) {
 	rw.WriteHeader(http.StatusNotImplemented)
 }
 
-func (c *SwitchConfig) postSwitchConfig(rw http.ResponseWriter, rp runtime.Producer) {
-	config, err := c.Client.GetConfig()
+func (c *SwitchFirmware) postSwitchFirmware(rw http.ResponseWriter, rp runtime.Producer) {
+	version, err := c.Client.GetFirmware()
 	if err != nil {
-		rp.Produce(rw, fmt.Sprintf("failed to update switch: %+v", err))
+		rp.Produce(rw, fmt.Sprintf("failed to fetch firmware version: %+v", err))
 		return
 	}
 
-	if err := rp.Produce(rw, config); err != nil {
+	if err := rp.Produce(rw, version); err != nil {
 		panic(err)
 	}
 }

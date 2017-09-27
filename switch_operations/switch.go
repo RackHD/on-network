@@ -4,4 +4,5 @@ package switch_operations
 type ISwitch interface {
 	Update(string, string) error
 	GetConfig() (string, error)
+	GetFirmware()(string, error)
 }
