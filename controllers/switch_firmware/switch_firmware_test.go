@@ -1,4 +1,4 @@
-package switch_config_test
+package switch_firmware_test
 
 import (
 	"bytes"
@@ -8,11 +8,11 @@ import (
 	"net/http/httptest"
 	"os"
 
-	. "github.com/RackHD/on-network/controllers/switch_config"
 	"github.com/RackHD/on-network/models"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/RackHD/on-network/controllers/switch_firmware"
 )
 
 type TestProducer struct{}
@@ -23,7 +23,7 @@ func (t TestProducer) Produce(w io.Writer, data interface{}) error {
 	return enc.Encode(data)
 }
 
-var _ = Describe("SwitchConfig", func() {
+var _ = Describe("SwitchFirmware", func() {
 	var prod TestProducer
 	var buff *httptest.ResponseRecorder
 
@@ -35,8 +35,8 @@ var _ = Describe("SwitchConfig", func() {
 		os.Setenv("SWITCH_MODELS_FILE_PATH", "../../switch_operations/cisco/fake/switchModels.yml")
 	})
 
-	Context("when a message is routed to the /switchConfig handler", func() {
-		It("info API should return siwtch running config", func() {
+	Context("when a message is routed to the /switchFirmware handler", func() {
+		It("info API should return switch firmware", func() {
 			// Create on-network api about
 			serverURL := "http://localhost:8080"
 
@@ -46,19 +46,18 @@ var _ = Describe("SwitchConfig", func() {
 					"username": "test",
 					"password": "test",
 					"switchType": "cisco"
-				},
-				"imageURL": "test",
-				"switchModel": "Nexus3000 C3164PQ Chassis"
+				}
 			}`)
 
-			req, err := http.NewRequest("POST", serverURL+"/switchConfig", bytes.NewBuffer(jsonBody))
+			req, err := http.NewRequest("POST", serverURL+"/switchFirmware", bytes.NewBuffer(jsonBody))
 			Expect(err).ToNot(HaveOccurred())
 
-			switchConfig := &models.Switch{}
-			err = json.Unmarshal(jsonBody, switchConfig)
+			switchFirmware := &models.Switch{}
+			err = json.Unmarshal(jsonBody, switchFirmware)
+
 			Expect(err).ToNot(HaveOccurred())
 
-			responder := MiddleWare(req, switchConfig)
+			responder := switch_firmware.MiddleWare(req, switchFirmware)
 			responder.WriteResponse(buff, prod)
 			Expect(buff.Code).To(Equal(http.StatusOK))
 		})

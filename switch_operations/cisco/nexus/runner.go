@@ -91,12 +91,6 @@ func (nr *Runner) Run(command string, method string,   timeout time.Duration) (s
 	if commonRunner.Result.Message != "" {
 		return commonRunner.Result.Message, nil
 	}else {
-		respInterface := commonRunner.Result.Body.(map[string]interface {})
-		var responseBodyString string
-		for key, value := range respInterface {
-			responseBodyString = fmt.Sprintf("%s\n %s:%s\n",responseBodyString,  key , value)
-
-		}
-		return string(responseBodyString), nil
+		return string(body), nil
 	}
 }

@@ -19,6 +19,9 @@ type FakeRunner struct {
 	// GetConfig
 	FailShowConfigCommand bool
 
+	//Get Firmware Version
+	FailShowFirmwareVersionCommand bool
+
 	TimeoutInstall		   bool
 	IsShowVersion          bool
 
@@ -76,6 +79,21 @@ func (fr *FakeRunner) Run(command string,method string,   timeout time.Duration)
 			return "", errors.New(4, "fake show config command failed")
 		}
 		return "{\"config\":\"empty\"}", nil
+	}
+
+	if strings.Contains(command, "show version") {
+		if fr.FailShowFirmwareVersionCommand {
+			return "", errors.New(4, "fake show version command failed")
+		}
+		return `{
+		"jsonrpc": "2.0",
+		"result": {
+			"body": {
+				"rr_sys_ver": "7.0(3)I5(2)"
+			}
+		},
+		"id": 1
+		}`, nil
 	}
 
 	return "", nil
