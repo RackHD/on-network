@@ -16,6 +16,8 @@ type FakeRunner struct {
 	FailShowVersionCommand bool
 	SuccessShowVersion     bool
 	ImageFileName          string
+	DowngradeNonDisruptive bool
+
 	// GetConfig
 	FailShowConfigCommand bool
 
@@ -46,8 +48,11 @@ func (fr *FakeRunner) Run(command string,method string,   timeout time.Duration)
 		}
 
 		if fr.TimeoutInstall {
-
 			return "", errors.New(2, "fake install command timedout")
+		}
+
+		if fr.DowngradeNonDisruptive && strings.Contains(command, "non-disruptive") {
+			return "", errors.New(2, "failed to get expected string. status code: 500")
 		}
 	}
 
