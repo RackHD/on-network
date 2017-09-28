@@ -32,58 +32,86 @@ func (c *Switch) Update(switchModel, imageURL string) error {
 
 	copyCmd := fmt.Sprintf("copy %s bootflash:%s vrf management", imageURL, imageFileName)
 	fmt.Println("starting copy")
-	_, err = c.Runner.Run(copyCmd, "cli",0)
+	_, err = c.Runner.Run(copyCmd, "cli", 0)
 	if err != nil {
 		return fmt.Errorf("error copying image from remote: %+v", err)
 	}
 
-	var installCmd string
-
 	if updateType == "Disruptive" {
-		installCmd = fmt.Sprintf("install all nxos bootflash:%s non-interruptive", imageFileName)
-		fmt.Println("starting disruptive installation")
-		_, err = c.Runner.Run(installCmd,"cli", 0)
-		if err != nil {
-			return fmt.Errorf("error install image: %+v", err)
-		}
-
+		err = c.disruptiveInstall(imageFileName)
 	} else if updateType == "NonDisruptive" {
-		installCmd = fmt.Sprintf("install all nxos bootflash:%s non-disruptive non-interruptive", imageFileName)
-		fmt.Println("starting non-disruptive installation ")
-		_, err = c.Runner.Run(installCmd, "cli",2 * time.Second)
+		err = c.nonDisruptiveInstall(imageFileName)
+	}
+
+	if err != nil {
+		return fmt.Errorf("Installation failed: %+v", err)
+	}
+	return  nil
+}
+
+func (c *Switch) disruptiveInstall (imageFileName string) error {
+	installCmd := fmt.Sprintf("install all nxos bootflash:%s non-interruptive", imageFileName)
+	fmt.Println("starting disruptive installation")
+
+	_, err := c.Runner.Run(installCmd, "cli", 0)
+
+	if err != nil {
+		return fmt.Errorf("error install image: %+v", err)
+
+	} else {
+		rebootCmd := fmt.Sprintf("reload force")
+		fmt.Println("Force rebooting the switch...")
+		_, err := c.Runner.Run(rebootCmd, "cli",0)
+		err = c.checkNewVersion(imageFileName)
 		if err != nil {
-
-			i, err := strconv.Atoi(os.Getenv("CISCO_INSTALL_TIME_IN_MINUTES"))
-			if err != nil {
-				panic("CISCO_INSTALL_TIME_IN_MINUTES was not set as an interger!")
-			}
-			installTimeDuration := time.Duration(i) * time.Minute
-
-			rebootTimeout :=time.NewTimer(installTimeDuration)
-			rebootTick := time.NewTicker(5 *time.Second)
-			isBreak := false
-			for {
-				select {
-				case <-rebootTimeout.C:
-					return errors.New(2, "Something went wrong during installation, switch never rebooted" )
-				case <-rebootTick.C:
-					_, err := c.Runner.Run("show version", "cli",time.Duration(6*time.Second))
-
-					if err != nil {
-						fmt.Println("Installation completed, and switch is rebooting.")
-						rebootTimeout.Stop()
-						rebootTick.Stop()
-						isBreak=true
-					}
-				}
-				if (isBreak) {
-					break
-				}
-			}
-		} else {
-			return errors.New(2, "Something went wrong during installation." )
+			return err
 		}
 	}
+	return nil
+}
+
+func (c *Switch) nonDisruptiveInstall (imageFileName string) error {
+	installCmd := fmt.Sprintf("install all nxos bootflash:%s non-disruptive non-interruptive", imageFileName)
+	fmt.Println("starting non-disruptive installation ")
+
+	//Setting Installation Timeout
+	i, err := strconv.Atoi(os.Getenv("CISCO_INSTALL_TIME_IN_MINUTES"))
+	if err != nil {
+		panic("CISCO_INSTALL_TIME_IN_MINUTES was not set as an interger!")
+	}
+	installTimeDuration := time.Duration(i) * time.Minute
+	_, err = c.Runner.Run(installCmd, "cli", installTimeDuration)
+	if err != nil {
+
+		if strings.Contains(err.Error(),"failed to get expected string"){
+			fmt.Println("Non-disruptive not supported, so starting with Disruptive install.....")
+			err = c.disruptiveInstall(imageFileName)
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+
+		err = c.checkNewVersion(imageFileName)
+		if err != nil {
+			return fmt.Errorf("error while checking version: %+v", err)
+		}
+	} else {
+
+		rebootCmd := fmt.Sprintf("reload force")
+		fmt.Println("Force rebooting the switch...")
+		_, err := c.Runner.Run(rebootCmd, "cli",0)
+		err = c.checkNewVersion(imageFileName)
+		if err != nil {
+			return fmt.Errorf("error while checking version: %+v", err)
+		}
+	}
+
+	return nil
+}
+
+func (c *Switch) checkNewVersion(imageFileName string) error{
+
 	b, err := strconv.Atoi(os.Getenv("CISCO_BOOT_TIME_IN_SECONDS"))
 	if err != nil {
 		panic("CISCO_BOOT_TIME_IN_SECONDS was not set as an interger!")
@@ -107,7 +135,7 @@ func (c *Switch) Update(switchModel, imageURL string) error {
 	for {
 		select {
 		case <-timeout:
-			return errors.New(2, "timeout connecting to switch after update.")
+			return errors.New(2, "error while connecting to the switch after update or failed to find the right version")
 
 		case <-tick:
 			body, err := c.Runner.Run("show version","cli", time.Duration(2*time.Second))
@@ -116,10 +144,11 @@ func (c *Switch) Update(switchModel, imageURL string) error {
 					fmt.Println("Successfully updgraded to the right version.")
 					return nil
 				}
-				return errors.New(3, "failed to find the expected version")
+
 			}
 		}
 	}
+
 }
 
 // GetConfig returns running-config of given switch

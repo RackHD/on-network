@@ -17,7 +17,7 @@ var _ = Describe("Cisco", func() {
 
 	BeforeEach(func() {
 		os.Setenv("SWITCH_MODELS_FILE_PATH", "fake/switchModels.yml")
-		os.Setenv("CISCO_RECONNECTION_TIMEOUT_IN_SECONDS", "8")
+		os.Setenv("CISCO_RECONNECTION_TIMEOUT_IN_SECONDS", "12")
 		os.Setenv("CISCO_BOOT_TIME_IN_SECONDS", "0")
 		os.Setenv("CISCO_INSTALL_TIME_IN_MINUTES", "1")
 	})
@@ -55,7 +55,7 @@ var _ = Describe("Cisco", func() {
 
 				err := ciscoSwitch.Update(disruptiveSwitchModel, "1.1.1.1/test.bin")
 				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(ContainSubstring("timeout connecting to switch after update"))
+				Expect(err.Error()).To(ContainSubstring("connecting to the switch after update or failed to find the right version"))
 			})
 		})
 
@@ -67,7 +67,7 @@ var _ = Describe("Cisco", func() {
 
 				err := ciscoSwitch.Update(disruptiveSwitchModel, "1.1.1.1/test.bin")
 				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(ContainSubstring("failed to find the expected version"))
+				Expect(err.Error()).To(ContainSubstring("connecting to the switch after update or failed to find the right version"))
 			})
 		})
 
@@ -79,6 +79,19 @@ var _ = Describe("Cisco", func() {
 
 				err := ciscoSwitch.Update(disruptiveSwitchModel, "1.1.1.1/test.bin")
 				Expect(err).ToNot(HaveOccurred())
+			})
+		})
+
+		Context("when the non-disruptive downgrade is not support", func() {
+			It("shouldnt return any error ", func() {
+				fakeRunner := &fake.FakeRunner{DowngradeNonDisruptive: true, TimeoutInstall: true}
+				ciscoSwitch := cisco.Switch{
+					Runner: fakeRunner,
+				}
+
+				err := ciscoSwitch.Update(nonDisruptiveSwitchModel, "1.1.1.1/test.bin")
+				Expect(err).ToNot(HaveOccurred())
+				Expect(fakeRunner.InstallCommand).To(ContainSubstring("non-disruptive"))
 			})
 		})
 
