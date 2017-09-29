@@ -20,6 +20,7 @@ import (
 	"github.com/go-openapi/swag"
 
 	"github.com/RackHD/on-network/restapi/operations/about"
+	"github.com/RackHD/on-network/restapi/operations/auth"
 	"github.com/RackHD/on-network/restapi/operations/switch_config"
 	"github.com/RackHD/on-network/restapi/operations/switch_firmware"
 	"github.com/RackHD/on-network/restapi/operations/update_switch"
@@ -40,26 +41,21 @@ func NewOnNetworkAPI(spec *loads.Document) *OnNetworkAPI {
 		BearerAuthenticator: security.BearerAuth,
 		JSONConsumer:        runtime.JSONConsumer(),
 		JSONProducer:        runtime.JSONProducer(),
+		AuthPostLoginHandler: auth.PostLoginHandlerFunc(func(params auth.PostLoginParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation AuthPostLogin has not yet been implemented")
+		}),
 		AboutAboutGetHandler: about.AboutGetHandlerFunc(func(params about.AboutGetParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation About Get has not yet been implemented")
+			return middleware.NotImplemented("operation AboutAboutGet has not yet been implemented")
 		}),
 		SwitchConfigSwitchConfigHandler: switch_config.SwitchConfigHandlerFunc(func(params switch_config.SwitchConfigParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation SwitchConfig has not yet been implemented")
+			return middleware.NotImplemented("operation SwitchConfigSwitchConfig has not yet been implemented")
 		}),
 		SwitchFirmwareSwitchFirmwareHandler: switch_firmware.SwitchFirmwareHandlerFunc(func(params switch_firmware.SwitchFirmwareParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation SwitchFirmware has not yet been implemented")
+			return middleware.NotImplemented("operation SwitchFirmwareSwitchFirmware has not yet been implemented")
 		}),
 		UpdateSwitchUpdateSwitchHandler: update_switch.UpdateSwitchHandlerFunc(func(params update_switch.UpdateSwitchParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation UpdateSwitch has not yet been implemented")
+			return middleware.NotImplemented("operation UpdateSwitchUpdateSwitch has not yet been implemented")
 		}),
-
-		// Applies when the "authorization" header is set
-		APIKeyHeaderAuth: func(token string) (interface{}, error) {
-			return nil, errors.NotImplemented("api key auth (APIKeyHeader) authorization from header param [authorization] has not yet been implemented")
-		},
-
-		// default authorizer is authorized meaning no requests are blocked
-		APIAuthorizer: security.Authorized(),
 	}
 }
 
@@ -89,13 +85,8 @@ type OnNetworkAPI struct {
 	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
 
-	// APIKeyHeaderAuth registers a function that takes a token and returns a principal
-	// it performs authentication based on an api key authorization provided in the header
-	APIKeyHeaderAuth func(string) (interface{}, error)
-
-	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
-	APIAuthorizer runtime.Authorizer
-
+	// AuthPostLoginHandler sets the operation handler for the post login operation
+	AuthPostLoginHandler auth.PostLoginHandler
 	// AboutAboutGetHandler sets the operation handler for the about get operation
 	AboutAboutGetHandler about.AboutGetHandler
 	// SwitchConfigSwitchConfigHandler sets the operation handler for the switch config operation
@@ -167,8 +158,8 @@ func (o *OnNetworkAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
-	if o.APIKeyHeaderAuth == nil {
-		unregistered = append(unregistered, "AuthorizationAuth")
+	if o.AuthPostLoginHandler == nil {
+		unregistered = append(unregistered, "auth.PostLoginHandler")
 	}
 
 	if o.AboutAboutGetHandler == nil {
@@ -202,24 +193,14 @@ func (o *OnNetworkAPI) ServeErrorFor(operationID string) func(http.ResponseWrite
 // AuthenticatorsFor gets the authenticators for the specified security schemes
 func (o *OnNetworkAPI) AuthenticatorsFor(schemes map[string]spec.SecurityScheme) map[string]runtime.Authenticator {
 
-	result := make(map[string]runtime.Authenticator)
-	for name, scheme := range schemes {
-		switch name {
-
-		case "APIKeyHeader":
-
-			result[name] = o.APIKeyAuthenticator(scheme.Name, scheme.In, o.APIKeyHeaderAuth)
-
-		}
-	}
-	return result
+	return nil
 
 }
 
 // Authorizer returns the registered authorizer
 func (o *OnNetworkAPI) Authorizer() runtime.Authorizer {
 
-	return o.APIAuthorizer
+	return nil
 
 }
 
@@ -286,6 +267,11 @@ func (o *OnNetworkAPI) initHandlerCache() {
 	if o.handlers == nil {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/login"] = auth.NewPostLogin(o.context, o.AuthPostLoginHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)

@@ -22,6 +22,8 @@ import (
 	updateswitchctrl "github.com/RackHD/on-network/controllers/update_switch"
 	configswitchctrl "github.com/RackHD/on-network/controllers/switch_config"
 	switchfirmwarectrl "github.com/RackHD/on-network/controllers/switch_firmware"
+	authctrl "github.com/RackHD/on-network/controllers/auth"
+	"github.com/RackHD/on-network/restapi/operations/auth"
 )
 
 // This file is safe to edit. Once it exists it will not be overwritten
@@ -46,10 +48,10 @@ func configureAPI(api *operations.OnNetworkAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	// Applies when the "authorization" header is set
+	/*// Applies when the "authorization" header is set
 	api.APIKeyHeaderAuth = func(token string) (interface{}, error) {
 		return token, nil
-	}
+	}*/
 
 	// Set your custom authorizer if needed. Default one is security.Authorized()
 	// Expected interface runtime.Authorizer
@@ -57,7 +59,11 @@ func configureAPI(api *operations.OnNetworkAPI) http.Handler {
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
 
-	api.AboutAboutGetHandler = about.AboutGetHandlerFunc(func(params about.AboutGetParams, principal interface{}) middleware.Responder {
+	api.AuthPostLoginHandler = auth.PostLoginHandlerFunc(func(params auth.PostLoginParams, principal interface{}) middleware.Responder {
+		return authctrl.MiddleWare(params.HTTPRequest, params.Body)
+	})
+
+		api.AboutAboutGetHandler = about.AboutGetHandlerFunc(func(params about.AboutGetParams, principal interface{}) middleware.Responder {
 		return aboutctrl.MiddleWare(params.HTTPRequest)
 	})
 
