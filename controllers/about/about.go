@@ -29,6 +29,7 @@ func (c *About) WriteResponse(rw http.ResponseWriter, rp runtime.Producer) {
 		c.notSupported(rw, rp)
 	}
 }
+//
 func (c *About) notSupported(rw http.ResponseWriter, rp runtime.Producer) {
 	rw.WriteHeader(http.StatusNotImplemented)
 }
