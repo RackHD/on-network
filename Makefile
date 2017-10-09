@@ -48,35 +48,29 @@ link:
 
 linux:
 	cd ${BUILD_DIR}; \
-	GOOS=linux GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BINARY}-linux-${GOARCH} . ; \
-	cd - >/dev/null
+	GOOS=linux GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BINARY}-linux-${GOARCH} . ; 
 
 darwin:
 	cd ${BUILD_DIR}; \
-	GOOS=darwin GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BINARY}-darwin-${GOARCH} . ; \
-	cd - >/dev/null
+	GOOS=darwin GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BINARY}-darwin-${GOARCH} . ; 
 
 windows:
 	cd ${BUILD_DIR}; \
-	GOOS=windows GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BINARY}-windows-${GOARCH}.exe . ; \
-	cd - >/dev/null
+	GOOS=windows GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BINARY}-windows-${GOARCH}.exe . ; 
 
 test:
 	cd ${REPO_DIR}; \
 	ginkgo -v ./... -cover -trace -race ; \
 	gover ... ; \
-	cat gover.coverprofile  ; \
-	cd - >/dev/null
+	cat gover.coverprofile ; 
 
 vet:
 	cd ${REPO_DIR}; \
-	go vet ./... > ${VET_REPORT} 2>&1 ; \
-	cd - >/dev/null
+	go vet ./... > ${VET_REPORT} 2>&1 ; 
 
 fmt:
 	cd ${REPO_DIR}; \
-	go fmt $$(go list ./... | grep -v /vendor/) ; \
-	cd - >/dev/null
+	go fmt $$(go list ./... | grep -v /vendor/) ; 
 
 clean:
 	-rm -f ${TEST_REPORT}
