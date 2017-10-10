@@ -29,7 +29,7 @@ var _ = Describe("About", func() {
 		prod = TestProducer{}
 		buff = httptest.NewRecorder()
 	})
-	Context("When a message is routed to the /api/about handler", func() {
+	Context("When a message is routed to the /about handler", func() {
 		It("INTEGRATION info API should return an About object containing name='on-network'", func() {
 			// Create on-network api about
 			serverURL := "http://localhost:8080"
