@@ -21,9 +21,12 @@ type Auth struct {
 
 // MiddleWare handles the route call
 func MiddleWare(r *http.Request, body *models.Login) middleware.Responder {
+
+
 	fmt.Println("Authentication")
 	return &Auth{
 		Request: r,
+		Login: *body,
 	}
 }
 
@@ -43,12 +46,37 @@ func (a *Auth) notSupported(rw http.ResponseWriter, rp runtime.Producer) {
 
 func (a *Auth) postLogin(rw http.ResponseWriter, rp runtime.Producer) {
 
-	tokenValue :=  ao.Claims.SetToken(a.Login.Username, a.Login.Password)
-	token := models.Token{
-		Token: tokenValue,
-	}
+	isValid, err := a.Handler.ValidateLogin(a.Login.Username, a.Login.Password)
+	if err != nil {
+		loginError := models.LoginError{
+			Message: fmt.Sprintf("Invalid Credential, %+v" , err),
+			Error: "400",
+		}
 
-	if err := rp.Produce(rw, token); err != nil {
-		panic(err)
+		if err := rp.Produce(rw, loginError); err != nil {
+			panic(err)
+		}
+	}else{
+		if isValid {
+			tokenValue :=  a.Handler.SetToken(a.Login.Username)
+			token := models.Token{
+				Token: tokenValue,
+			}
+
+			if err := rp.Produce(rw, token); err != nil {
+				panic(err)
+			}
+		} else{
+			loginError := models.LoginError{
+				Message:"Invalid Credential" ,
+				Error: "400",
+			}
+
+			if err := rp.Produce(rw, loginError); err != nil {
+			panic(err)
+			}
+		}
 	}
 }
+
+

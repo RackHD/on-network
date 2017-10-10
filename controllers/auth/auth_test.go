@@ -8,11 +8,12 @@ import (
 	"net/http/httptest"
 	"os"
 
-	. "github.com/RackHD/on-network/controllers/switch_config"
+	. "github.com/RackHD/on-network/controllers/auth"
 	"github.com/RackHD/on-network/models"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"fmt"
 )
 
 type TestProducer struct{}
@@ -23,7 +24,7 @@ func (t TestProducer) Produce(w io.Writer, data interface{}) error {
 	return enc.Encode(data)
 }
 
-var _ = Describe("SwitchConfig", func() {
+var _ = Describe("loginFunction", func() {
 	var prod TestProducer
 	var buff *httptest.ResponseRecorder
 
@@ -31,36 +32,33 @@ var _ = Describe("SwitchConfig", func() {
 		// Set up receiver to mock out where response would go
 		prod = TestProducer{}
 		buff = httptest.NewRecorder()
+		fmt.Println("Inside login test")
 
-		os.Setenv("SWITCH_MODELS_FILE_PATH", "../../switch_operations/cisco/fake/switchModels.yml")
+		os.Setenv("SERVICE_USERNAME", "admin")
+		os.Setenv("SERVICE_PASSWORD", "Password123!")
 	})
 
-	Context("when a message is routed to the /switchConfig handler", func() {
-		It("info API should return siwtch running config", func() {
-			// Create on-network api about
+	Context("when a message is routed to the /login handler", func() {
+		It("info API should return a generated token", func() {
+
 			serverURL := "http://localhost:8080"
 
 			jsonBody := []byte(`{
-				"endpoint": {
-					"ip": "test",
 					"username": "test",
-					"password": "test",
-					"switchType": "cisco"
-				},
-				"imageURL": "test",
-				"switchModel": "Nexus3000 C3164PQ Chassis"
+					"password": "test"
 			}`)
 
-			req, err := http.NewRequest("POST", serverURL+"/switchConfig", bytes.NewBuffer(jsonBody))
+			req, err := http.NewRequest("POST", serverURL+"/login", bytes.NewBuffer(jsonBody))
 			Expect(err).ToNot(HaveOccurred())
 
-			switchConfig := &models.Switch{}
-			err = json.Unmarshal(jsonBody, switchConfig)
+			login := &models.Login{}
+			err = json.Unmarshal(jsonBody, login)
 			Expect(err).ToNot(HaveOccurred())
 
-			responder := MiddleWare(req, switchConfig)
+			responder := MiddleWare(req, login)
 			responder.WriteResponse(buff, prod)
 			Expect(buff.Code).To(Equal(http.StatusOK))
+
 		})
 	})
 })

@@ -9,5 +9,5 @@ import (
 
 func TestSwitchConfig(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "SwitchConfig Suite")
+	RunSpecs(t, "Login Function Suite")
 }

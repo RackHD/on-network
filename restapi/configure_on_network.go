@@ -59,7 +59,7 @@ func configureAPI(api *operations.OnNetworkAPI) http.Handler {
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
 
-	api.AuthPostLoginHandler = auth.PostLoginHandlerFunc(func(params auth.PostLoginParams, principal interface{}) middleware.Responder {
+	api.AuthPostLoginHandler = auth.PostLoginHandlerFunc(func(params auth.PostLoginParams) middleware.Responder {
 		return authctrl.MiddleWare(params.HTTPRequest, params.Body)
 	})
 
@@ -68,7 +68,7 @@ func configureAPI(api *operations.OnNetworkAPI) http.Handler {
 	})
 
 
-	api.UpdateSwitchUpdateSwitchHandler = update_switch.UpdateSwitchHandlerFunc(func(params update_switch.UpdateSwitchParams, principal interface{}) middleware.Responder {
+	api.UpdateSwitchUpdateSwitchHandler = update_switch.UpdateSwitchHandlerFunc(func(params update_switch.UpdateSwitchParams) middleware.Responder {
 		return updateswitchctrl.MiddleWare(params.HTTPRequest, params.Body)
 	})
 
@@ -76,7 +76,7 @@ func configureAPI(api *operations.OnNetworkAPI) http.Handler {
 		return configswitchctrl.MiddleWare(params.HTTPRequest, params.Body)
 	})
 
-	api.SwitchFirmwareSwitchFirmwareHandler = switch_firmware.SwitchFirmwareHandlerFunc(func(params switch_firmware.SwitchFirmwareParams, principal interface{}) middleware.Responder {
+	api.SwitchFirmwareSwitchFirmwareHandler = switch_firmware.SwitchFirmwareHandlerFunc(func(params switch_firmware.SwitchFirmwareParams) middleware.Responder {
 		return switchfirmwarectrl.MiddleWare(params.HTTPRequest, params.Body)
 	})
 

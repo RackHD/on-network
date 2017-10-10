@@ -37,6 +37,11 @@ func init() {
         ],
         "summary": "Get about",
         "operationId": "aboutGet",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successfully retrieved about",
@@ -100,6 +105,11 @@ func init() {
         ],
         "summary": "Get switch running config",
         "operationId": "switchConfig",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "body",
@@ -301,11 +311,6 @@ func init() {
       "name": "authorization",
       "in": "header"
     }
-  },
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ]
+  }
 }`))
 }

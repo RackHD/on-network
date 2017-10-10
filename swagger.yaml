@@ -100,8 +100,6 @@ securityDefinitions:
   in: header
   name: authorization
 
-security:
-- bearerAuth: []
 
 paths:
   /login:
@@ -134,6 +132,8 @@ paths:
   /about:
     get:
       description: Information about on-network
+      security:
+        - Bearer: []
       operationId: aboutGet
       responses:
         200:
@@ -151,6 +151,8 @@ paths:
   /updateSwitch:
     post:
       description: Update switch firmware based on specified switch type and firmware image
+      security:
+          - Bearer: []
       operationId: updateSwitch
       parameters:
       - name: body
@@ -171,6 +173,8 @@ paths:
   /switchConfig:
     post:
       description: Get switch running config
+      security:
+        - Bearer: []
       operationId: switchConfig
       parameters:
       - name: body
@@ -191,6 +195,8 @@ paths:
   /switchFirmware:
      post:
        description: Get switch Firmware Version
+       security:
+             - Bearer: []
        operationId: switchFirmware
        parameters:
        - name: body
