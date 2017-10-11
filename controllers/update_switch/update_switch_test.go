@@ -61,7 +61,7 @@ var _ = Describe("UpdateSwitch", func() {
 
 			responder := MiddleWare(req, updateSwitch)
 			responder.WriteResponse(buff, prod)
-			Expect(buff.Code).To(Equal(http.StatusOK))
+			Expect(buff.Code).To(Equal(http.StatusBadRequest))
 		})
 	})
 })

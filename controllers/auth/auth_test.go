@@ -57,7 +57,7 @@ var _ = Describe("loginFunction", func() {
 
 			responder := MiddleWare(req, login)
 			responder.WriteResponse(buff, prod)
-			Expect(buff.Code).To(Equal(http.StatusOK))
+			Expect(buff.Code).To(Equal(http.StatusUnauthorized))
 
 		})
 	})

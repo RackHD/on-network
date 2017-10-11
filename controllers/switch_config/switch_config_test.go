@@ -60,7 +60,7 @@ var _ = Describe("SwitchConfig", func() {
 
 			responder := MiddleWare(req, switchConfig)
 			responder.WriteResponse(buff, prod)
-			Expect(buff.Code).To(Equal(http.StatusOK))
+			Expect(buff.Code).To(Equal(http.StatusNotFound))
 		})
 	})
 })

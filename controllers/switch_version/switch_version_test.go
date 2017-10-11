@@ -35,7 +35,7 @@ var _ = Describe("SwitchVersion", func() {
 		os.Setenv("SWITCH_MODELS_FILE_PATH", "../../switch_operations/cisco/fake/switchModels.yml")
 	})
 
-	Context("when a message is routed to the /switchFirmware handler", func() {
+	Context("when a message is routed to the /switchVersion handler", func() {
 		It("info API should return switch firmware", func() {
 			// Create on-network api about
 			serverURL := "http://localhost:8080"
@@ -49,7 +49,7 @@ var _ = Describe("SwitchVersion", func() {
 				}
 			}`)
 
-			req, err := http.NewRequest("POST", serverURL+"/switchFirmware", bytes.NewBuffer(jsonBody))
+			req, err := http.NewRequest("POST", serverURL+"/switchVersion", bytes.NewBuffer(jsonBody))
 			Expect(err).ToNot(HaveOccurred())
 
 			switchFirmware := &models.Switch{}
@@ -59,7 +59,7 @@ var _ = Describe("SwitchVersion", func() {
 
 			responder := switch_firmware.MiddleWare(req, switchFirmware)
 			responder.WriteResponse(buff, prod)
-			Expect(buff.Code).To(Equal(http.StatusOK))
+			Expect(buff.Code).To(Equal(http.StatusBadRequest))
 		})
 	})
 })

@@ -21,6 +21,11 @@ const UpdateSwitchCreatedCode int = 201
 swagger:response updateSwitchCreated
 */
 type UpdateSwitchCreated struct {
+
+	/*
+	  In: Body
+	*/
+	Payload models.Status `json:"body,omitempty"`
 }
 
 // NewUpdateSwitchCreated creates UpdateSwitchCreated with default headers values
@@ -28,10 +33,26 @@ func NewUpdateSwitchCreated() *UpdateSwitchCreated {
 	return &UpdateSwitchCreated{}
 }
 
+// WithPayload adds the payload to the update switch created response
+func (o *UpdateSwitchCreated) WithPayload(payload models.Status) *UpdateSwitchCreated {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the update switch created response
+func (o *UpdateSwitchCreated) SetPayload(payload models.Status) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *UpdateSwitchCreated) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(201)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
 }
 
 /*UpdateSwitchDefault Error

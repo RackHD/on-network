@@ -12,19 +12,19 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// SwitchConfig switch config
-// swagger:model SwitchConfig
+// SwitchVersionResponse switch version response
+// swagger:model SwitchVersionResponse
 
-type SwitchConfig struct {
+type SwitchVersionResponse struct {
 
-	// config
-	Config string `json:"config,omitempty"`
+	// version
+	Version string `json:"version,omitempty"`
 }
 
-/* polymorph SwitchConfig config false */
+/* polymorph SwitchVersionResponse version false */
 
-// Validate validates this switch config
-func (m *SwitchConfig) Validate(formats strfmt.Registry) error {
+// Validate validates this switch version response
+func (m *SwitchVersionResponse) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if len(res) > 0 {
@@ -34,7 +34,7 @@ func (m *SwitchConfig) Validate(formats strfmt.Registry) error {
 }
 
 // MarshalBinary interface implementation
-func (m *SwitchConfig) MarshalBinary() ([]byte, error) {
+func (m *SwitchVersionResponse) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -42,8 +42,8 @@ func (m *SwitchConfig) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *SwitchConfig) UnmarshalBinary(b []byte) error {
-	var res SwitchConfig
+func (m *SwitchVersionResponse) UnmarshalBinary(b []byte) error {
+	var res SwitchVersionResponse
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}
