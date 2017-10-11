@@ -23,7 +23,9 @@ import (
 	configswitchctrl "github.com/RackHD/on-network/controllers/switch_config"
 	switchfirmwarectrl "github.com/RackHD/on-network/controllers/switch_firmware"
 	authctrl "github.com/RackHD/on-network/controllers/auth"
+    switchversionctrl "github.com/RackHD/on-network/controllers/switch_version"
 	"github.com/RackHD/on-network/restapi/operations/auth"
+	"github.com/RackHD/on-network/restapi/operations/switch_version"
 )
 
 // This file is safe to edit. Once it exists it will not be overwritten
@@ -68,7 +70,7 @@ func configureAPI(api *operations.OnNetworkAPI) http.Handler {
 	})
 
 
-	api.UpdateSwitchUpdateSwitchHandler = update_switch.UpdateSwitchHandlerFunc(func(params update_switch.UpdateSwitchParams) middleware.Responder {
+	api.UpdateSwitchUpdateSwitchHandler = update_switch.UpdateSwitchHandlerFunc(func(params update_switch.UpdateSwitchParams, principal interface{}) middleware.Responder {
 		return updateswitchctrl.MiddleWare(params.HTTPRequest, params.Body)
 	})
 
@@ -76,8 +78,12 @@ func configureAPI(api *operations.OnNetworkAPI) http.Handler {
 		return configswitchctrl.MiddleWare(params.HTTPRequest, params.Body)
 	})
 
-	api.SwitchFirmwareSwitchFirmwareHandler = switch_firmware.SwitchFirmwareHandlerFunc(func(params switch_firmware.SwitchFirmwareParams) middleware.Responder {
+	api.SwitchFirmwareSwitchFirmwareHandler = switch_firmware.SwitchFirmwareHandlerFunc(func(params switch_firmware.SwitchFirmwareParams, principal interface{}) middleware.Responder {
 		return switchfirmwarectrl.MiddleWare(params.HTTPRequest, params.Body)
+	})
+
+	api.SwitchVersionSwitchVersionHandler = switch_version.SwitchVersionHandlerFunc(func(params switch_version.SwitchVersionParams, principal interface{}) middleware.Responder {
+		return switchversionctrl.MiddleWare(params.HTTPRequest, params.Body)
 	})
 
 	api.ServerShutdown = func() {}
