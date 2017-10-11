@@ -1,0 +1,12 @@
+---
+switches:
+- name: "cisco"
+  models:
+  - name: "3132"
+    disruptive: true
+  - name: "3172"
+    disruptive: true
+  - name: "3164"
+    disruptive: false
+  - name: "9332"
+    disruptive: false

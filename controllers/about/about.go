@@ -1,21 +1,25 @@
 package about
 
 import (
-	"net/http"
+	"github.com/RackHD/on-network/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/RackHD/on-network/models"
+	"net/http"
 )
+
+
 // Info is a struct for the http objects
 type About struct {
 	Request *http.Request
 }
+
 // MiddleWare handles the route call
 func MiddleWare(r *http.Request) middleware.Responder {
 	return &About{
 		Request: r,
 	}
 }
+
 // WriteResponse implements the CRUD logic behind the /credentials route
 func (c *About) WriteResponse(rw http.ResponseWriter, rp runtime.Producer) {
 	switch c.Request.Method {
@@ -25,6 +29,7 @@ func (c *About) WriteResponse(rw http.ResponseWriter, rp runtime.Producer) {
 		c.notSupported(rw, rp)
 	}
 }
+//
 func (c *About) notSupported(rw http.ResponseWriter, rp runtime.Producer) {
 	rw.WriteHeader(http.StatusNotImplemented)
 }
