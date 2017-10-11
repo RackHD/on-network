@@ -23,6 +23,7 @@ import (
 	"github.com/RackHD/on-network/restapi/operations/auth"
 	"github.com/RackHD/on-network/restapi/operations/switch_config"
 	"github.com/RackHD/on-network/restapi/operations/switch_firmware"
+	"github.com/RackHD/on-network/restapi/operations/switch_version"
 	"github.com/RackHD/on-network/restapi/operations/update_switch"
 	"github.com/RackHD/on-network/auth_operations"
 )
@@ -57,10 +58,13 @@ func NewOnNetworkAPI(spec *loads.Document) *OnNetworkAPI {
 		SwitchConfigSwitchConfigHandler: switch_config.SwitchConfigHandlerFunc(func(params switch_config.SwitchConfigParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation SwitchConfigSwitchConfig has not yet been implemented")
 		}),
-		SwitchFirmwareSwitchFirmwareHandler: switch_firmware.SwitchFirmwareHandlerFunc(func(params switch_firmware.SwitchFirmwareParams) middleware.Responder {
+		SwitchFirmwareSwitchFirmwareHandler: switch_firmware.SwitchFirmwareHandlerFunc(func(params switch_firmware.SwitchFirmwareParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation SwitchFirmwareSwitchFirmware has not yet been implemented")
 		}),
-		UpdateSwitchUpdateSwitchHandler: update_switch.UpdateSwitchHandlerFunc(func(params update_switch.UpdateSwitchParams) middleware.Responder {
+		SwitchVersionSwitchVersionHandler: switch_version.SwitchVersionHandlerFunc(func(params switch_version.SwitchVersionParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation SwitchVersionSwitchVersion has not yet been implemented")
+		}),
+		UpdateSwitchUpdateSwitchHandler: update_switch.UpdateSwitchHandlerFunc(func(params update_switch.UpdateSwitchParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation UpdateSwitchUpdateSwitch has not yet been implemented")
 		}),
 
@@ -125,6 +129,8 @@ type OnNetworkAPI struct {
 	SwitchConfigSwitchConfigHandler switch_config.SwitchConfigHandler
 	// SwitchFirmwareSwitchFirmwareHandler sets the operation handler for the switch firmware operation
 	SwitchFirmwareSwitchFirmwareHandler switch_firmware.SwitchFirmwareHandler
+	// SwitchVersionSwitchVersionHandler sets the operation handler for the switch version operation
+	SwitchVersionSwitchVersionHandler switch_version.SwitchVersionHandler
 	// UpdateSwitchUpdateSwitchHandler sets the operation handler for the update switch operation
 	UpdateSwitchUpdateSwitchHandler update_switch.UpdateSwitchHandler
 
@@ -208,6 +214,10 @@ func (o *OnNetworkAPI) Validate() error {
 
 	if o.SwitchFirmwareSwitchFirmwareHandler == nil {
 		unregistered = append(unregistered, "switch_firmware.SwitchFirmwareHandler")
+	}
+
+	if o.SwitchVersionSwitchVersionHandler == nil {
+		unregistered = append(unregistered, "switch_version.SwitchVersionHandler")
 	}
 
 	if o.UpdateSwitchUpdateSwitchHandler == nil {
@@ -333,6 +343,11 @@ func (o *OnNetworkAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/switchFirmware"] = switch_firmware.NewSwitchFirmware(o.context, o.SwitchFirmwareSwitchFirmwareHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/switchVersion"] = switch_version.NewSwitchVersion(o.context, o.SwitchVersionSwitchVersionHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
