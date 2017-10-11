@@ -140,6 +140,46 @@ func init() {
         ],
         "summary": "Get switch Firmware Version",
         "operationId": "switchFirmware",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Switch"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully returned switch firmware version"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/switchVersion": {
+      "post": {
+        "description": "Get switch Version",
+        "tags": [
+          "/switchVersion"
+        ],
+        "summary": "Get switch Firmware Version",
+        "operationId": "switchVersion",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "body",
@@ -170,6 +210,11 @@ func init() {
         ],
         "summary": "Update switch firmware",
         "operationId": "updateSwitch",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "body",

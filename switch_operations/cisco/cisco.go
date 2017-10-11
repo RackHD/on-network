@@ -13,7 +13,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/google/uuid"
 	"encoding/json"
-)
+	)
 
 type Switch struct {
 	Runner nexus.CommandRunner
@@ -180,5 +180,20 @@ func (c *Switch) GetFirmware() (string, error) {
 
 	version := respInterface["rr_sys_ver"]
 	return version.(string), nil
+}
 
+// GetFirmware returns Firmware Version of given switch
+func (c *Switch) GetFullVersion() (map[string] interface{}, error) {
+	result, err := c.Runner.Run("show version", "cli", 0)
+	if err != nil {
+		return nil, fmt.Errorf("error running show version command: %+v", err)
+	}
+	var versionBody nexus.CommandRunnerResponseBody
+	err = json.Unmarshal([]byte(result), &versionBody)
+	if err != nil {
+		return nil, fmt.Errorf("error getting the result of show version: %+v", err)
+	}
+	respInterface := versionBody.Result.Body.(map[string] interface{})
+	delete(respInterface,"TABLE_package_list")
+	return respInterface, nil
 }

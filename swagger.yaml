@@ -213,3 +213,25 @@ paths:
        summary: Get switch Firmware Version
        tags:
        - /switchFirmware
+
+  /switchVersion:
+     post:
+       description: Get switch Version
+       security:
+             - Bearer: []
+       operationId: switchVersion
+       parameters:
+       - name: body
+         in: body
+         schema:
+           $ref: "#/definitions/Switch"
+       responses:
+         200:
+           description: Successfully returned switch firmware version
+         default:
+           description: Error
+           schema:
+             $ref: '#definitions/ErrorResponse'
+       summary: Get switch Firmware Version
+       tags:
+       - /switchVersion
