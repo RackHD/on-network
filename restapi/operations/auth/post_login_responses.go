@@ -56,14 +56,14 @@ func (o *PostLoginOK) WriteResponse(rw http.ResponseWriter, producer runtime.Pro
 	}
 }
 
-// PostLoginBadRequestCode is the HTTP code returned for type PostLoginBadRequest
-const PostLoginBadRequestCode int = 400
+// PostLoginUnauthorizedCode is the HTTP code returned for type PostLoginUnauthorized
+const PostLoginUnauthorizedCode int = 401
 
-/*PostLoginBadRequest Whether the user is not found or error while login
+/*PostLoginUnauthorized Whether the user is not found or error while login
 
-swagger:response postLoginBadRequest
+swagger:response postLoginUnauthorized
 */
-type PostLoginBadRequest struct {
+type PostLoginUnauthorized struct {
 
 	/*
 	  In: Body
@@ -71,69 +71,26 @@ type PostLoginBadRequest struct {
 	Payload *models.LoginError `json:"body,omitempty"`
 }
 
-// NewPostLoginBadRequest creates PostLoginBadRequest with default headers values
-func NewPostLoginBadRequest() *PostLoginBadRequest {
-	return &PostLoginBadRequest{}
+// NewPostLoginUnauthorized creates PostLoginUnauthorized with default headers values
+func NewPostLoginUnauthorized() *PostLoginUnauthorized {
+	return &PostLoginUnauthorized{}
 }
 
-// WithPayload adds the payload to the post login bad request response
-func (o *PostLoginBadRequest) WithPayload(payload *models.LoginError) *PostLoginBadRequest {
+// WithPayload adds the payload to the post login unauthorized response
+func (o *PostLoginUnauthorized) WithPayload(payload *models.LoginError) *PostLoginUnauthorized {
 	o.Payload = payload
 	return o
 }
 
-// SetPayload sets the payload to the post login bad request response
-func (o *PostLoginBadRequest) SetPayload(payload *models.LoginError) {
+// SetPayload sets the payload to the post login unauthorized response
+func (o *PostLoginUnauthorized) SetPayload(payload *models.LoginError) {
 	o.Payload = payload
 }
 
 // WriteResponse to the client
-func (o *PostLoginBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *PostLoginUnauthorized) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.WriteHeader(400)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
-}
-
-// PostLoginForbiddenCode is the HTTP code returned for type PostLoginForbidden
-const PostLoginForbiddenCode int = 403
-
-/*PostLoginForbidden If user is not found (bad credentials) OR if user can not login.
-
-swagger:response postLoginForbidden
-*/
-type PostLoginForbidden struct {
-
-	/*
-	  In: Body
-	*/
-	Payload *models.LoginError `json:"body,omitempty"`
-}
-
-// NewPostLoginForbidden creates PostLoginForbidden with default headers values
-func NewPostLoginForbidden() *PostLoginForbidden {
-	return &PostLoginForbidden{}
-}
-
-// WithPayload adds the payload to the post login forbidden response
-func (o *PostLoginForbidden) WithPayload(payload *models.LoginError) *PostLoginForbidden {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the post login forbidden response
-func (o *PostLoginForbidden) SetPayload(payload *models.LoginError) {
-	o.Payload = payload
-}
-
-// WriteResponse to the client
-func (o *PostLoginForbidden) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
-
-	rw.WriteHeader(403)
+	rw.WriteHeader(401)
 	if o.Payload != nil {
 		payload := o.Payload
 		if err := producer.Produce(rw, payload); err != nil {

@@ -21,6 +21,11 @@ const SwitchFirmwareOKCode int = 200
 swagger:response switchFirmwareOK
 */
 type SwitchFirmwareOK struct {
+
+	/*
+	  In: Body
+	*/
+	Payload models.SwitchVersionResponse `json:"body,omitempty"`
 }
 
 // NewSwitchFirmwareOK creates SwitchFirmwareOK with default headers values
@@ -28,10 +33,26 @@ func NewSwitchFirmwareOK() *SwitchFirmwareOK {
 	return &SwitchFirmwareOK{}
 }
 
+// WithPayload adds the payload to the switch firmware o k response
+func (o *SwitchFirmwareOK) WithPayload(payload models.SwitchVersionResponse) *SwitchFirmwareOK {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the switch firmware o k response
+func (o *SwitchFirmwareOK) SetPayload(payload models.SwitchVersionResponse) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *SwitchFirmwareOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
 }
 
 /*SwitchFirmwareDefault Error

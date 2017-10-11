@@ -59,7 +59,7 @@ var _ = Describe("SwitchFirmware", func() {
 
 			responder := switch_firmware.MiddleWare(req, switchFirmware)
 			responder.WriteResponse(buff, prod)
-			Expect(buff.Code).To(Equal(http.StatusOK))
+			Expect(buff.Code).To(Equal(http.StatusBadRequest))
 		})
 	})
 })

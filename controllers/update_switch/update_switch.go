@@ -61,11 +61,17 @@ func (c *UpdateSwitch) postUpdateSwitch(rw http.ResponseWriter, rp runtime.Produ
 	err := c.Client.Update(c.SwitchModel, c.ImageURL)
 
  	if err != nil {
+ 		rw.WriteHeader(400)
 		rp.Produce(rw, fmt.Sprintf("failed to update switch: %+v", err))
 		return
 	}
 
-	if err := rp.Produce(rw, fmt.Sprintf("succeeded to update switch!!!")); err != nil {
+	status := models.Status{
+		Message: fmt.Sprintf("succeeded to update switch!!!"),
+	}
+
+	rw.WriteHeader(201)
+	if err := rp.Produce(rw, status); err != nil {
 		panic(err)
 	}
 }

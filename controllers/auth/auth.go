@@ -50,8 +50,9 @@ func (a *Auth) postLogin(rw http.ResponseWriter, rp runtime.Producer) {
 	if err != nil {
 		loginError := models.LoginError{
 			Message: fmt.Sprintf("Invalid Credential, %+v" , err),
-			Error: "400",
+			Error: "401",
 		}
+		rw.WriteHeader(401)
 
 		if err := rp.Produce(rw, loginError); err != nil {
 			panic(err)
@@ -69,8 +70,9 @@ func (a *Auth) postLogin(rw http.ResponseWriter, rp runtime.Producer) {
 		} else{
 			loginError := models.LoginError{
 				Message:"Invalid Credential" ,
-				Error: "400",
+				Error: "401",
 			}
+			rw.WriteHeader(401)
 
 			if err := rp.Produce(rw, loginError); err != nil {
 			panic(err)

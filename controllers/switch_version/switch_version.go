@@ -58,6 +58,7 @@ func (c *SwitchVersion) notSupported(rw http.ResponseWriter, rp runtime.Producer
 func (c *SwitchVersion) postSwitchVersion(rw http.ResponseWriter, rp runtime.Producer) {
 	version, err := c.Client.GetFullVersion()
 	if err != nil {
+		rw.WriteHeader(400)
 		rp.Produce(rw, fmt.Sprintf("failed to fetch firmware version: %+v", err))
 		return
 	}

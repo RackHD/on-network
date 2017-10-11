@@ -58,11 +58,16 @@ func (c *SwitchConfig) notSupported(rw http.ResponseWriter, rp runtime.Producer)
 func (c *SwitchConfig) postSwitchConfig(rw http.ResponseWriter, rp runtime.Producer) {
 	config, err := c.Client.GetConfig()
 	if err != nil {
+		rw.WriteHeader(404)
 		rp.Produce(rw, fmt.Sprintf("failed to update switch: %+v", err))
 		return
 	}
 
-	if err := rp.Produce(rw, config); err != nil {
+	configResponse := models.SwitchConfigResponse{
+		Config: config,
+	}
+
+	if err := rp.Produce(rw, configResponse); err != nil {
 		panic(err)
 	}
 }

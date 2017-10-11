@@ -82,14 +82,8 @@ func init() {
               "$ref": "#/definitions/Token"
             }
           },
-          "400": {
+          "401": {
             "description": "Whether the user is not found or error while login",
-            "schema": {
-              "$ref": "#/definitions/LoginError"
-            }
-          },
-          "403": {
-            "description": "If user is not found (bad credentials) OR if user can not login.",
             "schema": {
               "$ref": "#/definitions/LoginError"
             }
@@ -121,7 +115,10 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Successfully returned switch running config"
+            "description": "Successfully returned switch running config",
+            "schema": {
+              "$ref": "#definitions/SwitchConfigResponse"
+            }
           },
           "default": {
             "description": "Error",
@@ -156,7 +153,10 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Successfully returned switch firmware version"
+            "description": "Successfully returned switch firmware version",
+            "schema": {
+              "$ref": "#definitions/SwitchVersionResponse"
+            }
           },
           "default": {
             "description": "Error",
@@ -226,7 +226,10 @@ func init() {
         ],
         "responses": {
           "201": {
-            "description": "Successfully issued update switch firmware"
+            "description": "Successfully issued update switch firmware",
+            "schema": {
+              "$ref": "#definitions/Status"
+            }
           },
           "default": {
             "description": "Error",
@@ -287,6 +290,14 @@ func init() {
         }
       }
     },
+    "Status": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
     "Switch": {
       "type": "object",
       "required": [
@@ -295,6 +306,14 @@ func init() {
       "properties": {
         "endpoint": {
           "$ref": "#/definitions/SwitchEndpoint"
+        }
+      }
+    },
+    "SwitchConfigResponse": {
+      "type": "object",
+      "properties": {
+        "config": {
+          "type": "string"
         }
       }
     },
@@ -317,6 +336,14 @@ func init() {
           "type": "string"
         },
         "username": {
+          "type": "string"
+        }
+      }
+    },
+    "SwitchVersionResponse": {
+      "type": "object",
+      "properties": {
+        "version": {
           "type": "string"
         }
       }

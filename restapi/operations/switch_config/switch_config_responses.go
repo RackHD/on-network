@@ -21,6 +21,11 @@ const SwitchConfigOKCode int = 200
 swagger:response switchConfigOK
 */
 type SwitchConfigOK struct {
+
+	/*
+	  In: Body
+	*/
+	Payload models.SwitchConfigResponse `json:"body,omitempty"`
 }
 
 // NewSwitchConfigOK creates SwitchConfigOK with default headers values
@@ -28,10 +33,26 @@ func NewSwitchConfigOK() *SwitchConfigOK {
 	return &SwitchConfigOK{}
 }
 
+// WithPayload adds the payload to the switch config o k response
+func (o *SwitchConfigOK) WithPayload(payload models.SwitchConfigResponse) *SwitchConfigOK {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the switch config o k response
+func (o *SwitchConfigOK) SetPayload(payload models.SwitchConfigResponse) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *SwitchConfigOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
 }
 
 /*SwitchConfigDefault Error

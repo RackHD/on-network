@@ -58,11 +58,16 @@ func (c *SwitchFirmware) notSupported(rw http.ResponseWriter, rp runtime.Produce
 func (c *SwitchFirmware) postSwitchFirmware(rw http.ResponseWriter, rp runtime.Producer) {
 	version, err := c.Client.GetFirmware()
 	if err != nil {
+		rw.WriteHeader(400)
 		rp.Produce(rw, fmt.Sprintf("failed to fetch firmware version: %+v", err))
 		return
 	}
 
-	if err := rp.Produce(rw, version); err != nil {
+	versionResponse := models.SwitchVersionResponse{
+		Version: version,
+	}
+
+	if err := rp.Produce(rw, versionResponse); err != nil {
 		panic(err)
 	}
 }
