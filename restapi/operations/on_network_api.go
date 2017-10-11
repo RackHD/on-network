@@ -58,13 +58,13 @@ func NewOnNetworkAPI(spec *loads.Document) *OnNetworkAPI {
 		SwitchConfigSwitchConfigHandler: switch_config.SwitchConfigHandlerFunc(func(params switch_config.SwitchConfigParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation SwitchConfigSwitchConfig has not yet been implemented")
 		}),
-		SwitchFirmwareSwitchFirmwareHandler: switch_firmware.SwitchFirmwareHandlerFunc(func(params switch_firmware.SwitchFirmwareParams) middleware.Responder {
+		SwitchFirmwareSwitchFirmwareHandler: switch_firmware.SwitchFirmwareHandlerFunc(func(params switch_firmware.SwitchFirmwareParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation SwitchFirmwareSwitchFirmware has not yet been implemented")
 		}),
 		SwitchVersionSwitchVersionHandler: switch_version.SwitchVersionHandlerFunc(func(params switch_version.SwitchVersionParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation SwitchVersionSwitchVersion has not yet been implemented")
 		}),
-		UpdateSwitchUpdateSwitchHandler: update_switch.UpdateSwitchHandlerFunc(func(params update_switch.UpdateSwitchParams) middleware.Responder {
+		UpdateSwitchUpdateSwitchHandler: update_switch.UpdateSwitchHandlerFunc(func(params update_switch.UpdateSwitchParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation UpdateSwitchUpdateSwitch has not yet been implemented")
 		}),
 
