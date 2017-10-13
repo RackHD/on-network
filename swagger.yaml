@@ -22,17 +22,31 @@ definitions:
         type: string
     required:
     - name
+  FirmwareImage:
+    type: object
+    required:
+    - imageType
+    - imageURL
+    properties:
+      imageType:
+        type: string
+        enum: ["nxos", "kickstart", "system" ]
+      imageURL:
+        type: string
   UpdateSwitch:
     type: object
     required:
     - endpoint
-    - imageURL
+    - firmwareImages
     - switchModel
     properties:
       endpoint:
         $ref: "#/definitions/SwitchEndpoint"
-      imageURL:
-        type: string
+      firmwareImages:
+        type: array
+        items:
+          $ref: "#/definitions/FirmwareImage"
+        minItems: 1
       switchModel:
         type: string
   SwitchEndpoint:

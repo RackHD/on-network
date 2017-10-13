@@ -4,11 +4,16 @@ switches:
   models:
   - name: "3132"
     disruptive: true
+    firmware: "6.0"
   - name: "3172"
     disruptive: true
+    firmware: "6.0"
   - name: "3164"
     disruptive: false
+    firmware: "7.0"
   - name: "9332"
     disruptive: false
+    firmware: "7.0"
   - name: "93180"
     disruptive: false
+    firmware: "7.0"

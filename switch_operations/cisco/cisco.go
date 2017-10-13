@@ -13,40 +13,129 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/google/uuid"
 	"encoding/json"
-	)
+
+	"github.com/RackHD/on-network/models"
+)
 
 type Switch struct {
 	Runner nexus.CommandRunner
 }
 
-func (c *Switch) Update(switchModel, imageURL string) error {
+func (c *Switch) Update(switchModel string, firmwareImages []*models.FirmwareImage) error {
 	switchesDatabase := store.GetSwitchFileDatabase() //switch this if use database
 
-	updateType, err := switchesDatabase.GetUpdateType("cisco", switchModel)
+	updateType,firmware, err := switchesDatabase.GetUpdateType("cisco", switchModel)
 	if err != nil {
 		return err
 	}
 
-	imageFileName := fmt.Sprintf("%s-%s", uuid.New().String(), path.Base(imageURL))
-	fmt.Println("filename", imageFileName)
+	if firmware == "7.0" {
+		imageURL := ""
+		for _, firmwareImage := range firmwareImages {
 
-	copyCmd := fmt.Sprintf("copy %s bootflash:%s vrf management", imageURL, imageFileName)
-	fmt.Println("starting copy")
-	_, err = c.Runner.Run(copyCmd, "cli", 0)
-	if err != nil {
-		return fmt.Errorf("error copying image from remote: %+v", err)
+			if *firmwareImage.ImageType == "nxos" {
+				imageURL = *firmwareImage.ImageURL
+			}
+		}
+
+		if imageURL == "" {
+			return fmt.Errorf("Missing required image type: nxos")
+		}
+
+		imageFileName := fmt.Sprintf("%s-%s", uuid.New().String(), path.Base(imageURL))
+		fmt.Println("filename", imageFileName)
+
+		copyCmd := fmt.Sprintf("copy %s bootflash:%s vrf management", imageURL, imageFileName)
+		fmt.Println("starting copy")
+		_, err = c.Runner.Run(copyCmd, "cli", 0)
+		if err != nil {
+			return fmt.Errorf("error copying image from remote: %+v", err)
+		}
+
+		if updateType == "Disruptive" {
+			err = c.disruptiveInstall(imageFileName)
+		} else if updateType == "NonDisruptive" {
+			err = c.nonDisruptiveInstall(imageFileName)
+		}
+
+		if err != nil {
+			return fmt.Errorf("Installation failed: %+v", err)
+		}
+		return  nil
+	}else {
+		kickstartURL := ""
+		systemURL := ""
+
+		for _, firmwareImage := range firmwareImages {
+
+			if *firmwareImage.ImageType == "kickstart" {
+				kickstartURL = *firmwareImage.ImageURL
+			}else if *firmwareImage.ImageType == "system"  {
+				systemURL = *firmwareImage.ImageURL
+			}
+		}
+
+		if kickstartURL == ""  ||  systemURL == "" {
+			return fmt.Errorf("Missing required image type: kickstart or system")
+		}
+
+		kickstartFileName := fmt.Sprintf("%s-%s", uuid.New().String(), path.Base(kickstartURL))
+		fmt.Println("filename", kickstartFileName)
+
+		copyCmd := fmt.Sprintf("copy %s bootflash:%s vrf management", kickstartURL, kickstartFileName)
+		fmt.Println("starting copy")
+		_, err = c.Runner.Run(copyCmd, "cli", 0)
+		if err != nil {
+			return fmt.Errorf("error copying image from remote: %+v", err)
+		}
+
+
+		systemFileName := fmt.Sprintf("%s-%s", uuid.New().String(), path.Base(systemURL))
+		fmt.Println("filename", systemFileName)
+
+		copyCmd = fmt.Sprintf("copy %s bootflash:%s vrf management", systemURL, systemFileName)
+		fmt.Println("starting copy")
+		_, err = c.Runner.Run(copyCmd, "cli", 0)
+		if err != nil {
+			return fmt.Errorf("error copying image from remote: %+v", err)
+		}
+
+		if updateType == "Disruptive" {
+			err = c.disruptiveInstall6(kickstartFileName, systemFileName)
+		}
+		if err != nil {
+			return fmt.Errorf("Installation failed: %+v", err)
+		}
+		return  nil
 	}
 
-	if updateType == "Disruptive" {
-		err = c.disruptiveInstall(imageFileName)
-	} else if updateType == "NonDisruptive" {
-		err = c.nonDisruptiveInstall(imageFileName)
-	}
-
-	if err != nil {
-		return fmt.Errorf("Installation failed: %+v", err)
-	}
 	return  nil
+}
+
+func (c *Switch) disruptiveInstall6 (kickstartFileName , systemFileName string) error {
+	installCmd := fmt.Sprintf("install all kickstart bootflash:%s system  bootflash:%s non-interruptive", kickstartFileName,systemFileName )
+	fmt.Println("starting disruptive installation on 6.0")
+
+	_, err := c.Runner.Run(installCmd, "cli", 0)
+
+	if err != nil {
+		return fmt.Errorf("error install image: %+v", err)
+
+	} else {
+		rebootCmd := fmt.Sprintf("reload force")
+		fmt.Println("Force rebooting the switch...")
+		_, err := c.Runner.Run(rebootCmd, "cli",0)
+		err = c.checkNewVersion(kickstartFileName)
+		if err != nil {
+			return err
+		}
+
+		err = c.checkNewVersion(systemFileName)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (c *Switch) disruptiveInstall (imageFileName string) error {

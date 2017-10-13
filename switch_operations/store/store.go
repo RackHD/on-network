@@ -17,7 +17,8 @@ type Switch struct {
 	Name   string `yaml: "name"`
 	Models []struct {
 		Name       string `yaml: "name"`
-		Disruptive bool   `yaml :"disruptive"`
+		Disruptive bool   `yaml:"disruptive"`
+		Firmware   string `yaml:"firmware"`
 	} `yaml :"models"`
 }
 
@@ -45,21 +46,21 @@ func GetSwitchFileDatabase() *SwitchFileDatabase {
 	return switchFileDatabaseInstance
 }
 
-func (so *SwitchFileDatabase) GetUpdateType(switchType, switchModel string) (string, error) {
+func (so *SwitchFileDatabase) GetUpdateType(switchType, switchModel string) (string,string, error) {
 	for _, stype := range so.Switches {
 		if stype.Name == switchType {
 			for _, smodels := range stype.Models {
 				if strings.Contains(strings.ToLower(switchModel), strings.ToLower(smodels.Name)) {
 					if smodels.Disruptive == true {
-						return "Disruptive", nil
+						return "Disruptive", smodels.Firmware,  nil
 					}
-					return "NonDisruptive", nil
+					return "NonDisruptive",smodels.Firmware,  nil
 				}
 			}
-			return "", errors.New("couldn't find switch model")
+			return "","", errors.New("couldn't find switch model")
 		}
 	}
-	return "", errors.New("couldn't find switch type")
+	return "","", errors.New("couldn't find switch type")
 }
 
 func GetSwitches() ([]Switch, error) {
