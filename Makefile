@@ -58,6 +58,8 @@ windows:
 	cd ${BUILD_DIR}; \
 	GOOS=windows GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BINARY}-windows-${GOARCH}.exe . ; 
 
+docker:
+	docker build -t on-network:dev .
 test:
 	cd ${REPO_DIR}; \
 	ginkgo -v ./... -cover -trace -race ; \
