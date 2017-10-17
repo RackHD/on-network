@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	yaml "gopkg.in/yaml.v2"
+
 )
 
 type ISwitchDatabase interface {
