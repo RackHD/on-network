@@ -13,40 +13,130 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/google/uuid"
 	"encoding/json"
-	)
+
+	"github.com/RackHD/on-network/models"
+)
 
 type Switch struct {
 	Runner nexus.CommandRunner
 }
 
-func (c *Switch) Update(switchModel, imageURL string) error {
+func (c *Switch) Update(switchModel string, firmwareImages []*models.FirmwareImage) error {
 	switchesDatabase := store.GetSwitchFileDatabase() //switch this if use database
 
-	updateType, err := switchesDatabase.GetUpdateType("cisco", switchModel)
+	updateType,firmware, err := switchesDatabase.GetUpdateType("cisco", switchModel)
 	if err != nil {
 		return err
 	}
 
-	imageFileName := fmt.Sprintf("%s-%s", uuid.New().String(), path.Base(imageURL))
-	fmt.Println("filename", imageFileName)
 
-	copyCmd := fmt.Sprintf("copy %s bootflash:%s vrf management", imageURL, imageFileName)
-	fmt.Println("starting copy")
-	_, err = c.Runner.Run(copyCmd, "cli", 0)
-	if err != nil {
-		return fmt.Errorf("error copying image from remote: %+v", err)
+	if firmware == "7.0" {
+		imageURL := ""
+		for _, firmwareImage := range firmwareImages {
+
+			if *firmwareImage.ImageType == "nxos" {
+				imageURL = *firmwareImage.ImageURL
+			}
+		}
+
+		if imageURL == "" {
+			return fmt.Errorf("Missing required image type: nxos")
+		}
+
+
+		imageFileName, err := c.copyImage(imageURL)
+		if err != nil {
+			return err
+		}
+
+		if updateType == "Disruptive" {
+			err = c.disruptiveInstall(imageFileName)
+		} else if updateType == "NonDisruptive" {
+			err = c.nonDisruptiveInstall(imageFileName)
+		}
+
+		if err != nil {
+			return fmt.Errorf("Installation failed: %+v", err)
+		}
+		return  nil
+
+	}else {
+		kickstartURL := ""
+		systemURL := ""
+
+		for _, firmwareImage := range firmwareImages {
+
+			if *firmwareImage.ImageType == "kickstart" {
+				kickstartURL = *firmwareImage.ImageURL
+			}else if *firmwareImage.ImageType == "system"  {
+				systemURL = *firmwareImage.ImageURL
+			}
+		}
+
+		if kickstartURL == ""  ||  systemURL == "" {
+			return fmt.Errorf("Missing required image type: kickstart or system")
+		}
+
+
+		kickstartFileName, err := c.copyImage(kickstartURL)
+		if err != nil {
+			return err
+		}
+
+		systemFileName, err := c.copyImage(systemURL)
+		if err != nil {
+			return err
+		}
+
+
+		if updateType == "Disruptive" {
+			err = c.disruptiveInstall6(kickstartFileName, systemFileName)
+		}
+		if err != nil {
+			return fmt.Errorf("Installation failed: %+v", err)
+		}
+		return  nil
 	}
 
-	if updateType == "Disruptive" {
-		err = c.disruptiveInstall(imageFileName)
-	} else if updateType == "NonDisruptive" {
-		err = c.nonDisruptiveInstall(imageFileName)
-	}
-
-	if err != nil {
-		return fmt.Errorf("Installation failed: %+v", err)
-	}
 	return  nil
+}
+
+func (c *Switch) copyImage(fileURL string) (string , error){
+	fileName := fmt.Sprintf("%s-%s", uuid.New().String(), path.Base(fileURL))
+	fmt.Println("filename", fileName)
+
+	copyCmd := fmt.Sprintf("copy %s bootflash:%s vrf management", fileURL, fileName)
+	fmt.Println("starting copy")
+	_, err := c.Runner.Run(copyCmd, "cli", 0)
+	if err != nil {
+		return "", fmt.Errorf("error copying image from remote: %+v", err)
+	}
+
+	return fileName , nil
+}
+
+func (c *Switch) disruptiveInstall6 (kickstartFileName , systemFileName string) error {
+	installCmd := fmt.Sprintf("install all kickstart bootflash:%s system  bootflash:%s non-interruptive", kickstartFileName,systemFileName )
+	fmt.Println("starting disruptive installation on 6.0")
+
+	_, err := c.Runner.Run(installCmd, "cli", 0)
+	err =  checkUpgradeErrorStatus(err)
+	if err != nil {
+		return err
+	}
+
+
+	err = c.checkNewVersion(kickstartFileName, true)
+	if err != nil {
+		return err
+	}
+
+	err = c.checkNewVersion(systemFileName, false)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (c *Switch) disruptiveInstall (imageFileName string) error {
@@ -54,19 +144,19 @@ func (c *Switch) disruptiveInstall (imageFileName string) error {
 	fmt.Println("starting disruptive installation")
 
 	_, err := c.Runner.Run(installCmd, "cli", 0)
-
+	err =  checkUpgradeErrorStatus(err)
 	if err != nil {
-		return fmt.Errorf("error install image: %+v", err)
-
-	} else {
-		rebootCmd := fmt.Sprintf("reload force")
-		fmt.Println("Force rebooting the switch...")
-		_, err := c.Runner.Run(rebootCmd, "cli",0)
-		err = c.checkNewVersion(imageFileName)
-		if err != nil {
-			return err
-		}
+		return err
 	}
+
+	rebootCmd := fmt.Sprintf("reload force")
+	fmt.Println("Force rebooting the switch...")
+	_, err = c.Runner.Run(rebootCmd, "cli",0)
+	err = c.checkNewVersion(imageFileName, true)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -82,7 +172,6 @@ func (c *Switch) nonDisruptiveInstall (imageFileName string) error {
 	installTimeDuration := time.Duration(i) * time.Minute
 	_, err = c.Runner.Run(installCmd, "cli", installTimeDuration)
 	if err != nil {
-
 		if strings.Contains(err.Error(),"failed to get expected string"){
 			fmt.Println("Non-disruptive not supported, so starting with Disruptive install.....")
 			err = c.disruptiveInstall(imageFileName)
@@ -92,7 +181,7 @@ func (c *Switch) nonDisruptiveInstall (imageFileName string) error {
 			return nil
 		}
 
-		err = c.checkNewVersion(imageFileName)
+		err = c.checkNewVersion(imageFileName, true)
 		if err != nil {
 			return fmt.Errorf("error while checking version: %+v", err)
 		}
@@ -101,7 +190,7 @@ func (c *Switch) nonDisruptiveInstall (imageFileName string) error {
 		rebootCmd := fmt.Sprintf("reload force")
 		fmt.Println("Force rebooting the switch...")
 		_, err := c.Runner.Run(rebootCmd, "cli",0)
-		err = c.checkNewVersion(imageFileName)
+		err = c.checkNewVersion(imageFileName, false)
 		if err != nil {
 			return fmt.Errorf("error while checking version: %+v", err)
 		}
@@ -110,18 +199,19 @@ func (c *Switch) nonDisruptiveInstall (imageFileName string) error {
 	return nil
 }
 
-func (c *Switch) checkNewVersion(imageFileName string) error{
+func (c *Switch) checkNewVersion(imageFileName string , isSleep bool) error{
 
-	b, err := strconv.Atoi(os.Getenv("CISCO_BOOT_TIME_IN_SECONDS"))
-	if err != nil {
-		panic("CISCO_BOOT_TIME_IN_SECONDS was not set as an interger!")
+	if (isSleep) {
+		b, err := strconv.Atoi(os.Getenv("CISCO_BOOT_TIME_IN_SECONDS"))
+		if err != nil {
+			panic("CISCO_BOOT_TIME_IN_SECONDS was not set as an interger!")
+		}
+		bootTimeDuration := time.Duration(b) * time.Second
+
+		// After installation, the switch takes around 10 seconds to reboot, so we need to wait before we run show version
+		fmt.Printf("Sleeping for %+v\n", bootTimeDuration)
+		time.Sleep(bootTimeDuration)
 	}
-	bootTimeDuration := time.Duration(b) * time.Second
-
-	// After installation, the switch takes around 10 seconds to reboot, so we need to wait before we run show version
-	fmt.Printf("Sleeping for %+v\n", bootTimeDuration)
-	time.Sleep(bootTimeDuration)
-
 	fmt.Println("Verifying management connection and version update")
 
 	t, err := strconv.Atoi(os.Getenv("CISCO_RECONNECTION_TIMEOUT_IN_SECONDS"))
@@ -196,4 +286,14 @@ func (c *Switch) GetFullVersion() (map[string] interface{}, error) {
 	respInterface := versionBody.Result.Body.(map[string] interface{})
 	delete(respInterface,"TABLE_package_list")
 	return respInterface, nil
+}
+
+func checkUpgradeErrorStatus( err error) error  {
+	if err != nil {
+		// This is workaround for a cisco bug. During upgrade process, the nxapi return timeout error although it successfully upgraded the switch. This was noticed on FW version:  6.0(2)U6(9)
+		if !strings.Contains(err.Error(), "Finishing the upgrade, switch will reboot in 10 seconds"){
+			return err
+		}
+	}
+	return  nil
 }

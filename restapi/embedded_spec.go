@@ -268,6 +268,26 @@ func init() {
         }
       }
     },
+    "FirmwareImage": {
+      "type": "object",
+      "required": [
+        "imageType",
+        "imageURL"
+      ],
+      "properties": {
+        "imageType": {
+          "type": "string",
+          "enum": [
+            "nxos",
+            "kickstart",
+            "system"
+          ]
+        },
+        "imageURL": {
+          "type": "string"
+        }
+      }
+    },
     "Login": {
       "type": "object",
       "properties": {
@@ -360,15 +380,19 @@ func init() {
       "type": "object",
       "required": [
         "endpoint",
-        "imageURL",
+        "firmwareImages",
         "switchModel"
       ],
       "properties": {
         "endpoint": {
           "$ref": "#/definitions/SwitchEndpoint"
         },
-        "imageURL": {
-          "type": "string"
+        "firmwareImages": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/FirmwareImage"
+          }
         },
         "switchModel": {
           "type": "string"

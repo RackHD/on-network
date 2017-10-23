@@ -6,6 +6,8 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"strconv"
+
 	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/go-openapi/errors"
@@ -22,9 +24,10 @@ type UpdateSwitch struct {
 	// Required: true
 	Endpoint *SwitchEndpoint `json:"endpoint"`
 
-	// image URL
+	// firmware images
 	// Required: true
-	ImageURL *string `json:"imageURL"`
+	// Min Items: 1
+	FirmwareImages []*FirmwareImage `json:"firmwareImages"`
 
 	// switch model
 	// Required: true
@@ -33,7 +36,7 @@ type UpdateSwitch struct {
 
 /* polymorph UpdateSwitch endpoint false */
 
-/* polymorph UpdateSwitch imageURL false */
+/* polymorph UpdateSwitch firmwareImages false */
 
 /* polymorph UpdateSwitch switchModel false */
 
@@ -46,7 +49,7 @@ func (m *UpdateSwitch) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateImageURL(formats); err != nil {
+	if err := m.validateFirmwareImages(formats); err != nil {
 		// prop
 		res = append(res, err)
 	}
@@ -81,10 +84,34 @@ func (m *UpdateSwitch) validateEndpoint(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *UpdateSwitch) validateImageURL(formats strfmt.Registry) error {
+func (m *UpdateSwitch) validateFirmwareImages(formats strfmt.Registry) error {
 
-	if err := validate.Required("imageURL", "body", m.ImageURL); err != nil {
+	if err := validate.Required("firmwareImages", "body", m.FirmwareImages); err != nil {
 		return err
+	}
+
+	iFirmwareImagesSize := int64(len(m.FirmwareImages))
+
+	if err := validate.MinItems("firmwareImages", "body", iFirmwareImagesSize, 1); err != nil {
+		return err
+	}
+
+	for i := 0; i < len(m.FirmwareImages); i++ {
+
+		if swag.IsZero(m.FirmwareImages[i]) { // not required
+			continue
+		}
+
+		if m.FirmwareImages[i] != nil {
+
+			if err := m.FirmwareImages[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("firmwareImages" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil

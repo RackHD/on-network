@@ -1,6 +1,6 @@
 # \UpdateSwitchApi
 
-All URIs are relative to *https://localhost/api*
+All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -8,7 +8,7 @@ Method | HTTP request | Description
 
 
 # **UpdateSwitch**
-> UpdateSwitch()
+> DefinitionsStatus UpdateSwitch($body)
 
 Update switch firmware
 
@@ -16,20 +16,23 @@ Update switch firmware based on specified switch type and firmware image
 
 
 ### Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **body** | [**UpdateSwitch**](UpdateSwitch.md)|  | [optional] 
 
 ### Return type
 
-void (empty response body)
+[**DefinitionsStatus**](#definitions/Status.md)
 
 ### Authorization
 
-[APIKeyHeader](../README.md#APIKeyHeader)
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
  - **Content-Type**: application/json
- - **Accept**: Not defined
+ - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

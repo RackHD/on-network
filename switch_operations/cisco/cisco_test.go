@@ -8,12 +8,15 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/RackHD/on-network/models"
 )
 
 var _ = Describe("Cisco", func() {
 	var disruptiveSwitchModel = "Nexus3000 C3132QX Chassis"
 
 	var nonDisruptiveSwitchModel = "Nexus3000 C3164PQ Chassis"
+
+
 
 	BeforeEach(func() {
 		os.Setenv("SWITCH_MODELS_FILE_PATH", "fake/switchModels.yml")
@@ -23,15 +26,68 @@ var _ = Describe("Cisco", func() {
 	})
 
 	Describe("Update", func() {
-		Context("When copy command fails", func() {
+		Context("When copy command fails for 6.0 firmware", func() {
 			It("should return an error", func() {
 				ciscoSwitch := cisco.Switch{
 					Runner: &fake.FakeRunner{FailCopyCommand: true},
 				}
 
-				err := ciscoSwitch.Update(disruptiveSwitchModel, "1.1.1.1/test.bin")
+				var firmwareImages []*models.FirmwareImage
+
+				imageTypeKickstart := "kickstart"
+				imageURLKickstart := "1.1.1.1/kickstart.bin"
+
+				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeKickstart, ImageURL:&imageURLKickstart })
+
+				imageTypeSystem := "system"
+				imageURLSystem := "1.1.1.1/system.bin"
+
+				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeSystem, ImageURL:&imageURLSystem })
+
+
+				err := ciscoSwitch.Update(disruptiveSwitchModel, firmwareImages)
 				Expect(err).To(HaveOccurred())
 				Expect(err.Error()).To(ContainSubstring("error copying image from remote"))
+			})
+		})
+
+		Context("When copy command fails for 7.0 firmware ", func() {
+			It("should return an error", func() {
+				ciscoSwitch := cisco.Switch{
+					Runner: &fake.FakeRunner{FailCopyCommand: true},
+				}
+
+				var firmwareImages []*models.FirmwareImage
+
+				imageType := "nxos"
+				imageURL := "1.1.1.1/test.bin"
+
+
+				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageType, ImageURL:&imageURL })
+				err := ciscoSwitch.Update(nonDisruptiveSwitchModel, firmwareImages)
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("error copying image from remote"))
+			})
+		})
+
+		Context("When passing wrong parameters to copy for 6.0 ", func() {
+			It("should return an error", func() {
+				ciscoSwitch := cisco.Switch{
+					Runner: &fake.FakeRunner{FailCopyCommandWrongParam: true},
+				}
+
+				var firmwareImages []*models.FirmwareImage
+
+				imageType := "test"
+				imageURL := "1.1.1.1/test.bin"
+
+
+				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageType, ImageURL:&imageURL })
+
+
+				err := ciscoSwitch.Update(disruptiveSwitchModel, firmwareImages)
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("Missing required image type"))
 			})
 		})
 
@@ -41,9 +97,24 @@ var _ = Describe("Cisco", func() {
 					Runner: &fake.FakeRunner{FailInstallCommand: true},
 				}
 
-				err := ciscoSwitch.Update(disruptiveSwitchModel, "1.1.1.1/test.bin")
+				var firmwareImages []*models.FirmwareImage
+
+				imageTypeKickstart := "kickstart"
+				imageURLKickstart := "1.1.1.1/kickstart.bin"
+
+				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeKickstart, ImageURL:&imageURLKickstart })
+
+				imageTypeSystem := "system"
+				imageURLSystem := "1.1.1.1/system.bin"
+
+				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeSystem, ImageURL:&imageURLSystem })
+
+
+				err := ciscoSwitch.Update(disruptiveSwitchModel, firmwareImages)
+
+
 				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(ContainSubstring("error install image"))
+				Expect(err.Error()).To(ContainSubstring("Installation failed"))
 			})
 		})
 
@@ -52,8 +123,19 @@ var _ = Describe("Cisco", func() {
 				ciscoSwitch := cisco.Switch{
 					Runner: &fake.FakeRunner{FailReconnecting: true},
 				}
+				var firmwareImages []*models.FirmwareImage
 
-				err := ciscoSwitch.Update(disruptiveSwitchModel, "1.1.1.1/test.bin")
+				imageTypeKickstart := "kickstart"
+				imageURLKickstart := "1.1.1.1/kickstart.bin"
+
+				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeKickstart, ImageURL:&imageURLKickstart })
+
+				imageTypeSystem := "system"
+				imageURLSystem := "1.1.1.1/system.bin"
+
+				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeSystem, ImageURL:&imageURLSystem })
+				err := ciscoSwitch.Update(disruptiveSwitchModel, firmwareImages)
+
 				Expect(err).To(HaveOccurred())
 				Expect(err.Error()).To(ContainSubstring("connecting to the switch after update or failed to find the right version"))
 			})
@@ -65,44 +147,78 @@ var _ = Describe("Cisco", func() {
 					Runner: &fake.FakeRunner{FailShowVersionCommand: true},
 				}
 
-				err := ciscoSwitch.Update(disruptiveSwitchModel, "1.1.1.1/test.bin")
+				var firmwareImages []*models.FirmwareImage
+
+				imageTypeKickstart := "kickstart"
+				imageURLKickstart := "1.1.1.1/kickstart.bin"
+
+				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeKickstart, ImageURL:&imageURLKickstart })
+
+				imageTypeSystem := "system"
+				imageURLSystem := "1.1.1.1/system.bin"
+
+				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeSystem, ImageURL:&imageURLSystem })
+				err := ciscoSwitch.Update(disruptiveSwitchModel, firmwareImages)
 				Expect(err).To(HaveOccurred())
 				Expect(err.Error()).To(ContainSubstring("connecting to the switch after update or failed to find the right version"))
 			})
 		})
 
-		Context("When update is successful", func() {
+		Context("When update is successful for ", func() {
 			It("shouldnt return any error", func() {
 				ciscoSwitch := cisco.Switch{
 					Runner: &fake.FakeRunner{SuccessShowVersion: true},
 				}
 
-				err := ciscoSwitch.Update(disruptiveSwitchModel, "1.1.1.1/test.bin")
+				var firmwareImages []*models.FirmwareImage
+
+				imageTypeKickstart := "kickstart"
+				imageURLKickstart := "1.1.1.1/kickstart.bin"
+
+				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeKickstart, ImageURL:&imageURLKickstart })
+
+				imageTypeSystem := "system"
+				imageURLSystem := "1.1.1.1/system.bin"
+
+				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeSystem, ImageURL:&imageURLSystem })
+				err := ciscoSwitch.Update(disruptiveSwitchModel, firmwareImages)
 				Expect(err).ToNot(HaveOccurred())
 			})
 		})
 
-		Context("when the non-disruptive downgrade is not support", func() {
-			It("shouldnt return any error ", func() {
+		Context("When the non-disruptive downgrade is not supported", func() {
+			It("shouldn't return any error ", func() {
 				fakeRunner := &fake.FakeRunner{DowngradeNonDisruptive: true, TimeoutInstall: true}
 				ciscoSwitch := cisco.Switch{
 					Runner: fakeRunner,
 				}
 
-				err := ciscoSwitch.Update(nonDisruptiveSwitchModel, "1.1.1.1/test.bin")
+				var firmwareImages []*models.FirmwareImage
+				imageType := "nxos"
+				imageURL := "1.1.1.1/test.bin"
+
+
+				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageType, ImageURL:&imageURL })
+				err := ciscoSwitch.Update(nonDisruptiveSwitchModel, firmwareImages)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(fakeRunner.InstallCommand).To(ContainSubstring("non-disruptive"))
 			})
 		})
 
-		Context("when the update type is non-disruptive", func() {
+		Context("When the update type is non-disruptive", func() {
 			It("should run install all with non-disruptive", func() {
 				fakeRunner := &fake.FakeRunner{TimeoutInstall: true}
 				ciscoSwitch := cisco.Switch{
 					Runner: fakeRunner,
 				}
 
-				err := ciscoSwitch.Update(nonDisruptiveSwitchModel, "1.1.1.1/test.bin")
+				var firmwareImages []*models.FirmwareImage
+				imageType := "nxos"
+				imageURL := "1.1.1.1/test.bin"
+
+
+				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageType, ImageURL:&imageURL })
+				err := ciscoSwitch.Update(nonDisruptiveSwitchModel, firmwareImages)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(fakeRunner.InstallCommand).To(ContainSubstring("non-disruptive"))
 			})
