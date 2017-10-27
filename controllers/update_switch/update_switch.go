@@ -15,11 +15,10 @@ import (
 
 // UpdateSwitch is a struct for the http objects
 type UpdateSwitch struct {
-	Request     	*http.Request
-	Client      	switch_operations.ISwitch
-	SwitchModel	 	string
-	FirmwareImages	[]*models.FirmwareImage
-
+	Request        *http.Request
+	Client         switch_operations.ISwitch
+	SwitchModel    string
+	FirmwareImages []*models.FirmwareImage
 }
 
 // MiddleWare handles the route call
@@ -37,10 +36,10 @@ func MiddleWare(r *http.Request, body *models.UpdateSwitch) middleware.Responder
 	}
 
 	return &UpdateSwitch{
-		Request:     r,
-		Client:      client,
-		SwitchModel: *body.SwitchModel,
-		FirmwareImages :    body.FirmwareImages,
+		Request:        r,
+		Client:         client,
+		SwitchModel:    *body.SwitchModel,
+		FirmwareImages: body.FirmwareImages,
 	}
 }
 
@@ -61,8 +60,8 @@ func (c *UpdateSwitch) notSupported(rw http.ResponseWriter, rp runtime.Producer)
 func (c *UpdateSwitch) postUpdateSwitch(rw http.ResponseWriter, rp runtime.Producer) {
 	err := c.Client.Update(c.SwitchModel, c.FirmwareImages)
 
- 	if err != nil {
- 		rw.WriteHeader(400)
+	if err != nil {
+		rw.WriteHeader(400)
 		rp.Produce(rw, fmt.Sprintf("failed to update switch: %+v", err))
 		return
 	}

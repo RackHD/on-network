@@ -1,18 +1,19 @@
 package auth_operations
 
 import (
-//	"net/http"
-	"github.com/dgrijalva/jwt-go"
-	"time"
+	//	"net/http"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"os"
 	"strings"
+	"time"
 )
 
-var signedToken= ""
+var signedToken = ""
+
 const (
-	bearer	string = "bearer"
-	secret 	string = "secret"
+	bearer string = "bearer"
+	secret string = "secret"
 )
 
 type Claims struct {
@@ -20,32 +21,31 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
+func (c *Claims) ValidateLogin(username string, password string) (bool, error) {
 
-func (c* Claims) ValidateLogin(username string, password string) (bool, error) {
-
-	envUser,envChkUser := os.LookupEnv("SERVICE_USERNAME")
+	envUser, envChkUser := os.LookupEnv("SERVICE_USERNAME")
 	envPass, envChkPass := os.LookupEnv("SERVICE_PASSWORD")
 
-	if envChkUser == false || envChkPass == false{
+	if envChkUser == false || envChkPass == false {
 		err := fmt.Errorf("Service Username or Password not set")
 		return false, err
 	}
 
-	if username==envUser && password==envPass{
-		return  true,nil
+	if username == envUser && password == envPass {
+		return true, nil
 	}
 	return false, nil
 }
 
-func (c * Claims) SetToken(username string ) string {
+func (c *Claims) SetToken(username string) string {
 
 	// Expires the token and cookie in 1 hour
 	expireToken := time.Now().Add(time.Hour * 2).Unix()
 
 	// We'll manually assign the claims but in production you'd insert values from a database
-	claims := Claims {
+	claims := Claims{
 		username,
-		jwt.StandardClaims {
+		jwt.StandardClaims{
 			ExpiresAt: expireToken,
 			Issuer:    "localhost:9000",
 		},
@@ -57,15 +57,14 @@ func (c * Claims) SetToken(username string ) string {
 	// Signs the token with a secret.
 	signedToken, _ = token.SignedString([]byte(secret))
 
-
-	fmt.Println("Token created : -----> %+v" , signedToken)
+	fmt.Println("Token created : -----> %+v", signedToken)
 
 	return signedToken
 
 }
 
 // middleware to protect private pages
-func  ValidateToken(tokenHeader string) bool {
+func ValidateToken(tokenHeader string) bool {
 
 	tokenString, ok := extractTokenFromAuthHeader(tokenHeader)
 	if !ok {
@@ -78,7 +77,7 @@ func  ValidateToken(tokenHeader string) bool {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return  []byte(secret), nil
+		return []byte(secret), nil
 	})
 
 	if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
@@ -98,8 +97,3 @@ func extractTokenFromAuthHeader(val string) (token string, ok bool) {
 
 	return authHeaderParts[1], true
 }
-
-
-
-
-

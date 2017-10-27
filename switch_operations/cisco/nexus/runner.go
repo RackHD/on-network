@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
-
 )
 
 type Runner struct {
@@ -30,22 +29,21 @@ type CommandRunnerBody struct {
 }
 
 type Result struct {
-	Message string `json:"msg"`
-	Body interface{} `json:"body"`
+	Message string      `json:"msg"`
+	Body    interface{} `json:"body"`
 }
 
 type CommandRunnerResponseBody struct {
 	JsonRpc string `json:"jsonrpc"`
 	Result  Result `json:"result"`
 	ID      int    `json:"id"`
-
 }
 type CopyCommand struct {
 	Src string
 	Dst string
 }
 
-func (nr *Runner) Run(command string, method string,   timeout time.Duration) (string, error) {
+func (nr *Runner) Run(command string, method string, timeout time.Duration) (string, error) {
 	endpoint := fmt.Sprintf("http://%s/ins", nr.IP)
 
 	commandParam := Params{command, 1}
@@ -90,7 +88,7 @@ func (nr *Runner) Run(command string, method string,   timeout time.Duration) (s
 	json.Unmarshal(body, &commonRunner)
 	if commonRunner.Result.Message != "" {
 		return commonRunner.Result.Message, nil
-	}else {
+	} else {
 		return string(body), nil
 	}
 }

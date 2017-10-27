@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-
 	. "github.com/RackHD/on-network/controllers/update_switch"
 	"github.com/RackHD/on-network/models"
 

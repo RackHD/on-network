@@ -7,7 +7,6 @@ import (
 	"net/http"
 )
 
-
 // Info is a struct for the http objects
 type About struct {
 	Request *http.Request
@@ -29,6 +28,7 @@ func (c *About) WriteResponse(rw http.ResponseWriter, rp runtime.Producer) {
 		c.notSupported(rw, rp)
 	}
 }
+
 //
 func (c *About) notSupported(rw http.ResponseWriter, rp runtime.Producer) {
 	rw.WriteHeader(http.StatusNotImplemented)
