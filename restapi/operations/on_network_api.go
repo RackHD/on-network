@@ -25,14 +25,7 @@ import (
 	"github.com/RackHD/on-network/restapi/operations/switch_firmware"
 	"github.com/RackHD/on-network/restapi/operations/switch_version"
 	"github.com/RackHD/on-network/restapi/operations/update_switch"
-	"github.com/RackHD/on-network/auth_operations"
 )
-var bAuthenticated bool
-
-// This file is safe to edit. Once it exists it will not be overwritten
-type MyAuthInfo struct {
-	token string
-}
 
 // NewOnNetworkAPI creates a new OnNetwork instance
 func NewOnNetworkAPI(spec *loads.Document) *OnNetworkAPI {
@@ -70,17 +63,7 @@ func NewOnNetworkAPI(spec *loads.Document) *OnNetworkAPI {
 
 		// Applies when the "authorization" header is set
 		BearerAuth: func(token string) (interface{}, error) {
-			if auth_operations.ValidateToken(token){
-
-				authInfo := new(MyAuthInfo)
-				authInfo.token = token
-				bAuthenticated = true
-				return authInfo, nil
-
-
-			}else{
-					return nil, errors.NotImplemented("Invalid token")
-			}
+			return nil, errors.NotImplemented("api key auth (Bearer) authorization from header param [authorization] has not yet been implemented")
 		},
 
 		// default authorizer is authorized meaning no requests are blocked

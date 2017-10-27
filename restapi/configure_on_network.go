@@ -14,16 +14,16 @@ import (
 	"github.com/RackHD/on-network/restapi/operations"
 
 	"github.com/RackHD/on-network/restapi/operations/about"
-	"github.com/RackHD/on-network/restapi/operations/update_switch"
-	"github.com/RackHD/on-network/restapi/operations/switch_firmware"
 	"github.com/RackHD/on-network/restapi/operations/switch_config"
+	"github.com/RackHD/on-network/restapi/operations/switch_firmware"
+	"github.com/RackHD/on-network/restapi/operations/update_switch"
 
 	aboutctrl "github.com/RackHD/on-network/controllers/about"
-	updateswitchctrl "github.com/RackHD/on-network/controllers/update_switch"
+	authctrl "github.com/RackHD/on-network/controllers/auth"
 	configswitchctrl "github.com/RackHD/on-network/controllers/switch_config"
 	switchfirmwarectrl "github.com/RackHD/on-network/controllers/switch_firmware"
-	authctrl "github.com/RackHD/on-network/controllers/auth"
-  switchversionctrl "github.com/RackHD/on-network/controllers/switch_version"
+	switchversionctrl "github.com/RackHD/on-network/controllers/switch_version"
+	updateswitchctrl "github.com/RackHD/on-network/controllers/update_switch"
 	"github.com/RackHD/on-network/restapi/operations/auth"
 	"github.com/RackHD/on-network/restapi/operations/switch_version"
 )
@@ -65,10 +65,9 @@ func configureAPI(api *operations.OnNetworkAPI) http.Handler {
 		return authctrl.MiddleWare(params.HTTPRequest, params.Body)
 	})
 
-		api.AboutAboutGetHandler = about.AboutGetHandlerFunc(func(params about.AboutGetParams, principal interface{}) middleware.Responder {
+	api.AboutAboutGetHandler = about.AboutGetHandlerFunc(func(params about.AboutGetParams, principal interface{}) middleware.Responder {
 		return aboutctrl.MiddleWare(params.HTTPRequest)
 	})
-
 
 	api.UpdateSwitchUpdateSwitchHandler = update_switch.UpdateSwitchHandlerFunc(func(params update_switch.UpdateSwitchParams, principal interface{}) middleware.Responder {
 		return updateswitchctrl.MiddleWare(params.HTTPRequest, params.Body)
@@ -112,5 +111,9 @@ func setupMiddlewares(handler http.Handler) http.Handler {
 // The middleware configuration happens before anything, this middleware also applies to serving the swagger.json document.
 // So this is a good place to plug in a panic handling middleware, logging and metrics
 func setupGlobalMiddleware(handler http.Handler) http.Handler {
-	return handler
+	return redocMiddleware(handler)
+}
+
+func redocMiddleware(handler http.Handler) http.Handler {
+	return middleware.Redoc(middleware.RedocOpts{}, handler)
 }
