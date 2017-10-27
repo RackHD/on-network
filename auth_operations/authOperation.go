@@ -1,3 +1,5 @@
+// Copyright 2017, Dell EMC, Inc.
+
 package auth_operations
 
 import (

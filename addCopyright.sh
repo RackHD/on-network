@@ -23,7 +23,7 @@ GENERATED_FOLDERS="client cmd models restapi"
 
 FILE_TYPES=`find . -type f -name '*.*' | sed 's|.*\.||' | sort -u`
 
-IGNORED_TYPES="xml sh sample png go~ec44c464ac5f98dd43eea6a0cb8be01db0291fea idx iml pack css js map"
+IGNORED_TYPES="xml sh sample png idx iml pack css js map"
 
 function part_of_list(){
     echo $1 | grep -w $2
@@ -37,9 +37,14 @@ for folder in $GENERATED_FOLDERS; do
             echo
             echo "Processing file type: $fileType"
             for file in $(find . -type f -name "*.$fileType"); do
-                comment=${COMMENT[${fileType}_comment]}
-                echo "  Adding comment [$comment] to file [$file]"
-                sed -i "1s;^;$comment\n\n;" $file
+            if grep -Fq "$COPYRIGHT" $file
+                then
+                    echo "  File [$file] Already has copyrights"
+                else
+                    comment=${COMMENT[${fileType}_comment]}
+                    echo "  Adding comment [$comment] to file [$file]"
+                    sed -i "1s;^;$comment\n\n;" $file
+                fi
             done;
         fi
 
