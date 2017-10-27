@@ -1,3 +1,5 @@
+# Copyright 2017, Dell EMC, Inc.
+
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
 *.a

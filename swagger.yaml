@@ -1,3 +1,5 @@
+# Copyright 2017, Dell EMC, Inc.
+
 swagger: "2.0"
 info:
   title: on-network api

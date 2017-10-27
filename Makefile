@@ -1,4 +1,6 @@
-# Borrowed from:
+# Copyright 2017, Dell EMC, Inc.
+
+# Partially borrowed from:
 # https://github.com/silven/go-example/blob/master/Makefile
 # https://vic.demuzere.be/articles/golang-makefile-crosscompile/
 
