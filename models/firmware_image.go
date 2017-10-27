@@ -57,7 +57,7 @@ var firmwareImageTypeImageTypePropEnum []interface{}
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["nxos","kickstart","system"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["kickstart","system"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -66,8 +66,6 @@ func init() {
 }
 
 const (
-	// FirmwareImageImageTypeNxos captures enum value "nxos"
-	FirmwareImageImageTypeNxos string = "nxos"
 	// FirmwareImageImageTypeKickstart captures enum value "kickstart"
 	FirmwareImageImageTypeKickstart string = "kickstart"
 	// FirmwareImageImageTypeSystem captures enum value "system"

@@ -33,13 +33,13 @@ func (c *Switch) Update(switchModel string, firmwareImages []*models.FirmwareIma
 		imageURL := ""
 		for _, firmwareImage := range firmwareImages {
 
-			if *firmwareImage.ImageType == "nxos" {
+			if *firmwareImage.ImageType == "system" {
 				imageURL = *firmwareImage.ImageURL
 			}
 		}
 
 		if imageURL == "" {
-			return fmt.Errorf("Missing required image type: nxos")
+			return fmt.Errorf("Missing required image type: system")
 		}
 
 		imageFileName, err := c.copyImage(imageURL)

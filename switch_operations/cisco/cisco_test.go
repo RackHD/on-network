@@ -56,7 +56,7 @@ var _ = Describe("Cisco", func() {
 
 				var firmwareImages []*models.FirmwareImage
 
-				imageType := "nxos"
+				imageType := "system"
 				imageURL := "1.1.1.1/test.bin"
 
 				firmwareImages = append(firmwareImages, &models.FirmwareImage{ImageType: &imageType, ImageURL: &imageURL})
@@ -186,7 +186,7 @@ var _ = Describe("Cisco", func() {
 				}
 
 				var firmwareImages []*models.FirmwareImage
-				imageType := "nxos"
+				imageType := "system"
 				imageURL := "1.1.1.1/test.bin"
 
 				firmwareImages = append(firmwareImages, &models.FirmwareImage{ImageType: &imageType, ImageURL: &imageURL})
@@ -204,7 +204,7 @@ var _ = Describe("Cisco", func() {
 				}
 
 				var firmwareImages []*models.FirmwareImage
-				imageType := "nxos"
+				imageType := "system"
 				imageURL := "1.1.1.1/test.bin"
 
 				firmwareImages = append(firmwareImages, &models.FirmwareImage{ImageType: &imageType, ImageURL: &imageURL})

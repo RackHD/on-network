@@ -278,7 +278,6 @@ func init() {
         "imageType": {
           "type": "string",
           "enum": [
-            "nxos",
             "kickstart",
             "system"
           ]

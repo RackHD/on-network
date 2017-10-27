@@ -30,7 +30,7 @@ definitions:
     properties:
       imageType:
         type: string
-        enum: ["nxos", "kickstart", "system" ]
+        enum: ["kickstart", "system" ]
       imageURL:
         type: string
   UpdateSwitch:
