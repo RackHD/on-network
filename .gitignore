@@ -12,6 +12,8 @@ _test
 
 # Generated Binaries
 cmd/on-network-server/on-network-server*
+cmd/on-network-server-impl/on-network-server*
+
 
 # Architecture specific extensions/prefixes
 *.[568vq]
