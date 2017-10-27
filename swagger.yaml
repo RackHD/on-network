@@ -125,7 +125,7 @@ securityDefinitions:
 
     The following syntax must be used in the 'Authorization' header :
 
-    Bearer: xxxxxx.yyyyyyy.zzzzzz
+    Bearer xxxxxx.yyyyyyy.zzzzzz
   type: apiKey
   in: header
   name: authorization

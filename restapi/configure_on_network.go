@@ -26,6 +26,7 @@ import (
 	updateswitchctrl "github.com/RackHD/on-network/controllers/update_switch"
 	"github.com/RackHD/on-network/restapi/operations/auth"
 	"github.com/RackHD/on-network/restapi/operations/switch_version"
+	"strings"
 )
 
 // This file is safe to edit. Once it exists it will not be overwritten
@@ -111,9 +112,24 @@ func setupMiddlewares(handler http.Handler) http.Handler {
 // The middleware configuration happens before anything, this middleware also applies to serving the swagger.json document.
 // So this is a good place to plug in a panic handling middleware, logging and metrics
 func setupGlobalMiddleware(handler http.Handler) http.Handler {
-	return redocMiddleware(handler)
+	return uiMiddleware(redocMiddleware(handler))
 }
 
 func redocMiddleware(handler http.Handler) http.Handler {
 	return middleware.Redoc(middleware.RedocOpts{}, handler)
+}
+func uiMiddleware(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Shortcut helpers for swagger-ui
+		if r.URL.Path == "/swagger-ui" || r.URL.Path == "/api/help" {
+			http.Redirect(w, r, "/swagger-ui/", http.StatusFound)
+			return
+		}
+		// Serving ./swagger-ui/
+		if strings.Index(r.URL.Path, "/swagger-ui/") == 0 {
+			http.StripPrefix("/swagger-ui/", http.FileServer(http.Dir("swagger-ui"))).ServeHTTP(w, r)
+			return
+		}
+		handler.ServeHTTP(w, r)
+	})
 }

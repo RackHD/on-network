@@ -44,7 +44,7 @@ type SwitchVersionDefault struct {
 	/*
 	  In: Body
 	*/
-	Payload models.ErrorResponse `json:"body,omitempty"`
+	Payload *models.ErrorResponse `json:"body,omitempty"`
 }
 
 // NewSwitchVersionDefault creates SwitchVersionDefault with default headers values
@@ -70,13 +70,13 @@ func (o *SwitchVersionDefault) SetStatusCode(code int) {
 }
 
 // WithPayload adds the payload to the switch version default response
-func (o *SwitchVersionDefault) WithPayload(payload models.ErrorResponse) *SwitchVersionDefault {
+func (o *SwitchVersionDefault) WithPayload(payload *models.ErrorResponse) *SwitchVersionDefault {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the switch version default response
-func (o *SwitchVersionDefault) SetPayload(payload models.ErrorResponse) {
+func (o *SwitchVersionDefault) SetPayload(payload *models.ErrorResponse) {
 	o.Payload = payload
 }
 
@@ -84,9 +84,10 @@ func (o *SwitchVersionDefault) SetPayload(payload models.ErrorResponse) {
 func (o *SwitchVersionDefault) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(o._statusCode)
-	payload := o.Payload
-	if err := producer.Produce(rw, payload); err != nil {
-		panic(err) // let the recovery middleware deal with this
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
 	}
-
 }

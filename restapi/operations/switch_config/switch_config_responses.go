@@ -25,7 +25,7 @@ type SwitchConfigOK struct {
 	/*
 	  In: Body
 	*/
-	Payload models.SwitchConfigResponse `json:"body,omitempty"`
+	Payload *models.SwitchConfigResponse `json:"body,omitempty"`
 }
 
 // NewSwitchConfigOK creates SwitchConfigOK with default headers values
@@ -34,13 +34,13 @@ func NewSwitchConfigOK() *SwitchConfigOK {
 }
 
 // WithPayload adds the payload to the switch config o k response
-func (o *SwitchConfigOK) WithPayload(payload models.SwitchConfigResponse) *SwitchConfigOK {
+func (o *SwitchConfigOK) WithPayload(payload *models.SwitchConfigResponse) *SwitchConfigOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the switch config o k response
-func (o *SwitchConfigOK) SetPayload(payload models.SwitchConfigResponse) {
+func (o *SwitchConfigOK) SetPayload(payload *models.SwitchConfigResponse) {
 	o.Payload = payload
 }
 
@@ -48,11 +48,12 @@ func (o *SwitchConfigOK) SetPayload(payload models.SwitchConfigResponse) {
 func (o *SwitchConfigOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
-	payload := o.Payload
-	if err := producer.Produce(rw, payload); err != nil {
-		panic(err) // let the recovery middleware deal with this
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
 	}
-
 }
 
 /*SwitchConfigDefault Error
@@ -65,7 +66,7 @@ type SwitchConfigDefault struct {
 	/*
 	  In: Body
 	*/
-	Payload models.ErrorResponse `json:"body,omitempty"`
+	Payload *models.ErrorResponse `json:"body,omitempty"`
 }
 
 // NewSwitchConfigDefault creates SwitchConfigDefault with default headers values
@@ -91,13 +92,13 @@ func (o *SwitchConfigDefault) SetStatusCode(code int) {
 }
 
 // WithPayload adds the payload to the switch config default response
-func (o *SwitchConfigDefault) WithPayload(payload models.ErrorResponse) *SwitchConfigDefault {
+func (o *SwitchConfigDefault) WithPayload(payload *models.ErrorResponse) *SwitchConfigDefault {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the switch config default response
-func (o *SwitchConfigDefault) SetPayload(payload models.ErrorResponse) {
+func (o *SwitchConfigDefault) SetPayload(payload *models.ErrorResponse) {
 	o.Payload = payload
 }
 
@@ -105,9 +106,10 @@ func (o *SwitchConfigDefault) SetPayload(payload models.ErrorResponse) {
 func (o *SwitchConfigDefault) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(o._statusCode)
-	payload := o.Payload
-	if err := producer.Produce(rw, payload); err != nil {
-		panic(err) // let the recovery middleware deal with this
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
 	}
-
 }
