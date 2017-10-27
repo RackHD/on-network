@@ -15,18 +15,16 @@ import (
 type Auth struct {
 	Request *http.Request
 	Handler ao.Claims
-	Login models.Login
-
+	Login   models.Login
 }
 
 // MiddleWare handles the route call
 func MiddleWare(r *http.Request, body *models.Login) middleware.Responder {
 
-
 	fmt.Println("Authentication")
 	return &Auth{
 		Request: r,
-		Login: *body,
+		Login:   *body,
 	}
 }
 
@@ -49,17 +47,17 @@ func (a *Auth) postLogin(rw http.ResponseWriter, rp runtime.Producer) {
 	isValid, err := a.Handler.ValidateLogin(a.Login.Username, a.Login.Password)
 	if err != nil {
 		loginError := models.LoginError{
-			Message: fmt.Sprintf("Invalid Credential, %+v" , err),
-			Error: "401",
+			Message: fmt.Sprintf("Invalid Credential, %+v", err),
+			Error:   "401",
 		}
 		rw.WriteHeader(401)
 
 		if err := rp.Produce(rw, loginError); err != nil {
 			panic(err)
 		}
-	}else{
+	} else {
 		if isValid {
-			tokenValue :=  a.Handler.SetToken(a.Login.Username)
+			tokenValue := a.Handler.SetToken(a.Login.Username)
 			token := models.Token{
 				Token: tokenValue,
 			}
@@ -67,18 +65,16 @@ func (a *Auth) postLogin(rw http.ResponseWriter, rp runtime.Producer) {
 			if err := rp.Produce(rw, token); err != nil {
 				panic(err)
 			}
-		} else{
+		} else {
 			loginError := models.LoginError{
-				Message:"Invalid Credential" ,
-				Error: "401",
+				Message: "Invalid Credential",
+				Error:   "401",
 			}
 			rw.WriteHeader(401)
 
 			if err := rp.Produce(rw, loginError); err != nil {
-			panic(err)
+				panic(err)
 			}
 		}
 	}
 }
-
-

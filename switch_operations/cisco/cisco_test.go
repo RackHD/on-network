@@ -6,17 +6,15 @@ import (
 	"github.com/RackHD/on-network/switch_operations/cisco"
 	"github.com/RackHD/on-network/switch_operations/cisco/fake"
 
+	"github.com/RackHD/on-network/models"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/RackHD/on-network/models"
 )
 
 var _ = Describe("Cisco", func() {
 	var disruptiveSwitchModel = "Nexus3000 C3132QX Chassis"
 
 	var nonDisruptiveSwitchModel = "Nexus3000 C3164PQ Chassis"
-
-
 
 	BeforeEach(func() {
 		os.Setenv("SWITCH_MODELS_FILE_PATH", "fake/switchModels.yml")
@@ -37,13 +35,12 @@ var _ = Describe("Cisco", func() {
 				imageTypeKickstart := "kickstart"
 				imageURLKickstart := "1.1.1.1/kickstart.bin"
 
-				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeKickstart, ImageURL:&imageURLKickstart })
+				firmwareImages = append(firmwareImages, &models.FirmwareImage{ImageType: &imageTypeKickstart, ImageURL: &imageURLKickstart})
 
 				imageTypeSystem := "system"
 				imageURLSystem := "1.1.1.1/system.bin"
 
-				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeSystem, ImageURL:&imageURLSystem })
-
+				firmwareImages = append(firmwareImages, &models.FirmwareImage{ImageType: &imageTypeSystem, ImageURL: &imageURLSystem})
 
 				err := ciscoSwitch.Update(disruptiveSwitchModel, firmwareImages)
 				Expect(err).To(HaveOccurred())
@@ -59,11 +56,10 @@ var _ = Describe("Cisco", func() {
 
 				var firmwareImages []*models.FirmwareImage
 
-				imageType := "nxos"
+				imageType := "system"
 				imageURL := "1.1.1.1/test.bin"
 
-
-				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageType, ImageURL:&imageURL })
+				firmwareImages = append(firmwareImages, &models.FirmwareImage{ImageType: &imageType, ImageURL: &imageURL})
 				err := ciscoSwitch.Update(nonDisruptiveSwitchModel, firmwareImages)
 				Expect(err).To(HaveOccurred())
 				Expect(err.Error()).To(ContainSubstring("error copying image from remote"))
@@ -81,9 +77,7 @@ var _ = Describe("Cisco", func() {
 				imageType := "test"
 				imageURL := "1.1.1.1/test.bin"
 
-
-				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageType, ImageURL:&imageURL })
-
+				firmwareImages = append(firmwareImages, &models.FirmwareImage{ImageType: &imageType, ImageURL: &imageURL})
 
 				err := ciscoSwitch.Update(disruptiveSwitchModel, firmwareImages)
 				Expect(err).To(HaveOccurred())
@@ -102,16 +96,14 @@ var _ = Describe("Cisco", func() {
 				imageTypeKickstart := "kickstart"
 				imageURLKickstart := "1.1.1.1/kickstart.bin"
 
-				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeKickstart, ImageURL:&imageURLKickstart })
+				firmwareImages = append(firmwareImages, &models.FirmwareImage{ImageType: &imageTypeKickstart, ImageURL: &imageURLKickstart})
 
 				imageTypeSystem := "system"
 				imageURLSystem := "1.1.1.1/system.bin"
 
-				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeSystem, ImageURL:&imageURLSystem })
-
+				firmwareImages = append(firmwareImages, &models.FirmwareImage{ImageType: &imageTypeSystem, ImageURL: &imageURLSystem})
 
 				err := ciscoSwitch.Update(disruptiveSwitchModel, firmwareImages)
-
 
 				Expect(err).To(HaveOccurred())
 				Expect(err.Error()).To(ContainSubstring("Installation failed"))
@@ -128,12 +120,12 @@ var _ = Describe("Cisco", func() {
 				imageTypeKickstart := "kickstart"
 				imageURLKickstart := "1.1.1.1/kickstart.bin"
 
-				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeKickstart, ImageURL:&imageURLKickstart })
+				firmwareImages = append(firmwareImages, &models.FirmwareImage{ImageType: &imageTypeKickstart, ImageURL: &imageURLKickstart})
 
 				imageTypeSystem := "system"
 				imageURLSystem := "1.1.1.1/system.bin"
 
-				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeSystem, ImageURL:&imageURLSystem })
+				firmwareImages = append(firmwareImages, &models.FirmwareImage{ImageType: &imageTypeSystem, ImageURL: &imageURLSystem})
 				err := ciscoSwitch.Update(disruptiveSwitchModel, firmwareImages)
 
 				Expect(err).To(HaveOccurred())
@@ -152,12 +144,12 @@ var _ = Describe("Cisco", func() {
 				imageTypeKickstart := "kickstart"
 				imageURLKickstart := "1.1.1.1/kickstart.bin"
 
-				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeKickstart, ImageURL:&imageURLKickstart })
+				firmwareImages = append(firmwareImages, &models.FirmwareImage{ImageType: &imageTypeKickstart, ImageURL: &imageURLKickstart})
 
 				imageTypeSystem := "system"
 				imageURLSystem := "1.1.1.1/system.bin"
 
-				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeSystem, ImageURL:&imageURLSystem })
+				firmwareImages = append(firmwareImages, &models.FirmwareImage{ImageType: &imageTypeSystem, ImageURL: &imageURLSystem})
 				err := ciscoSwitch.Update(disruptiveSwitchModel, firmwareImages)
 				Expect(err).To(HaveOccurred())
 				Expect(err.Error()).To(ContainSubstring("connecting to the switch after update or failed to find the right version"))
@@ -175,12 +167,12 @@ var _ = Describe("Cisco", func() {
 				imageTypeKickstart := "kickstart"
 				imageURLKickstart := "1.1.1.1/kickstart.bin"
 
-				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeKickstart, ImageURL:&imageURLKickstart })
+				firmwareImages = append(firmwareImages, &models.FirmwareImage{ImageType: &imageTypeKickstart, ImageURL: &imageURLKickstart})
 
 				imageTypeSystem := "system"
 				imageURLSystem := "1.1.1.1/system.bin"
 
-				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageTypeSystem, ImageURL:&imageURLSystem })
+				firmwareImages = append(firmwareImages, &models.FirmwareImage{ImageType: &imageTypeSystem, ImageURL: &imageURLSystem})
 				err := ciscoSwitch.Update(disruptiveSwitchModel, firmwareImages)
 				Expect(err).ToNot(HaveOccurred())
 			})
@@ -194,11 +186,10 @@ var _ = Describe("Cisco", func() {
 				}
 
 				var firmwareImages []*models.FirmwareImage
-				imageType := "nxos"
+				imageType := "system"
 				imageURL := "1.1.1.1/test.bin"
 
-
-				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageType, ImageURL:&imageURL })
+				firmwareImages = append(firmwareImages, &models.FirmwareImage{ImageType: &imageType, ImageURL: &imageURL})
 				err := ciscoSwitch.Update(nonDisruptiveSwitchModel, firmwareImages)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(fakeRunner.InstallCommand).To(ContainSubstring("non-disruptive"))
@@ -213,18 +204,16 @@ var _ = Describe("Cisco", func() {
 				}
 
 				var firmwareImages []*models.FirmwareImage
-				imageType := "nxos"
+				imageType := "system"
 				imageURL := "1.1.1.1/test.bin"
 
-
-				firmwareImages  = append(firmwareImages, &models.FirmwareImage{ ImageType: &imageType, ImageURL:&imageURL })
+				firmwareImages = append(firmwareImages, &models.FirmwareImage{ImageType: &imageType, ImageURL: &imageURL})
 				err := ciscoSwitch.Update(nonDisruptiveSwitchModel, firmwareImages)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(fakeRunner.InstallCommand).To(ContainSubstring("non-disruptive"))
 			})
 		})
 	})
-
 
 	Describe("GetConfig", func() {
 		Context("when get running config command failed", func() {

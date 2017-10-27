@@ -1,3 +1,5 @@
+[//]: # ( Copyright 2017, Dell EMC, Inc.)
+
 # \UpdateSwitchApi
 
 All URIs are relative to *http://localhost*

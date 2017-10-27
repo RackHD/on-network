@@ -1,3 +1,5 @@
+# Copyright 2017, Dell EMC, Inc.
+
 swagger: "2.0"
 info:
   title: on-network api
@@ -30,7 +32,7 @@ definitions:
     properties:
       imageType:
         type: string
-        enum: ["nxos", "kickstart", "system" ]
+        enum: ["kickstart", "system" ]
       imageURL:
         type: string
   UpdateSwitch:
@@ -125,7 +127,7 @@ securityDefinitions:
 
     The following syntax must be used in the 'Authorization' header :
 
-    Bearer: xxxxxx.yyyyyyy.zzzzzz
+    Bearer xxxxxx.yyyyyyy.zzzzzz
   type: apiKey
   in: header
   name: authorization
@@ -188,7 +190,7 @@ paths:
         201:
           description: Successfully issued update switch firmware
           schema:
-            $ref: '#definitions/Status'
+            $ref: '#/definitions/Status'
         default:
           description: Error
           schema:
@@ -212,11 +214,11 @@ paths:
         200:
           description: Successfully returned switch running config
           schema:
-            $ref: '#definitions/SwitchConfigResponse'
+            $ref: '#/definitions/SwitchConfigResponse'
         default:
           description: Error
           schema:
-            $ref: '#definitions/ErrorResponse'
+            $ref: '#/definitions/ErrorResponse'
       summary: Get switch running config
       tags:
       - /switchConfig
@@ -236,11 +238,11 @@ paths:
          200:
            description: Successfully returned switch firmware version
            schema:
-            $ref: '#definitions/SwitchVersionResponse'
+            $ref: '#/definitions/SwitchVersionResponse'
          default:
            description: Error
            schema:
-             $ref: '#definitions/ErrorResponse'
+             $ref: '#/definitions/ErrorResponse'
        summary: Get switch Firmware Version
        tags:
        - /switchFirmware
@@ -262,7 +264,7 @@ paths:
          default:
            description: Error
            schema:
-             $ref: '#definitions/ErrorResponse'
+             $ref: '#/definitions/ErrorResponse'
        summary: Get switch Firmware Version
        tags:
        - /switchVersion
