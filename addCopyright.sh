@@ -9,7 +9,7 @@ declare -A COMMENT=()
 COMMENT["go_comment"]="//${COPYRIGHT}"
 COMMENT["yaml_comment"]="#${COPYRIGHT}"
 COMMENT["yml_comment"]="#${COPYRIGHT}"
-COMMENT["js_comment"]="//${COPYRIGHT}"
+COMMENT["js_comment"]="/*${COPYRIGHT}*/"
 COMMENT["css_comment"]="/*${COPYRIGHT}*/"
 COMMENT["html_comment"]="<!--${COPYRIGHT}-->"
 COMMENT["lock_comment"]="#${COPYRIGHT}"
@@ -23,7 +23,7 @@ GENERATED_FOLDERS="client cmd models restapi"
 
 FILE_TYPES=`find . -type f -name '*.*' | sed 's|.*\.||' | sort -u`
 
-IGNORED_TYPES="xml sh sample png idx iml pack css js map"
+IGNORED_TYPES="xml sh sample png idx iml pack"
 
 function part_of_list(){
     echo $1 | grep -w $2
