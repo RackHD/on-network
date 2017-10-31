@@ -1,4 +1,6 @@
-# Borrowed from:
+# Copyright 2017, Dell EMC, Inc.
+
+# Partially borrowed from:
 # https://github.com/silven/go-example/blob/master/Makefile
 # https://vic.demuzere.be/articles/golang-makefile-crosscompile/
 
@@ -15,7 +17,7 @@ BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 GITHUB_USERNAME=RackHD
 GITHUB_ORG=${GOPATH}/src/github.com/${GITHUB_USERNAME}
 REPO_DIR=${GOPATH}/src/github.com/${GITHUB_USERNAME}/${BINARY}
-BUILD_DIR=${REPO_DIR}/cmd/${BINARY}-server
+BUILD_DIR=${REPO_DIR}/cmd/${BINARY}-server-impl
 CURRENT_DIR=$(shell pwd)
 REPO_DIR_LINK=$(shell readlink ${REPO_DIR})
 

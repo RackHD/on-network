@@ -11,9 +11,9 @@ import (
 	. "github.com/RackHD/on-network/controllers/auth"
 	"github.com/RackHD/on-network/models"
 
+	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"fmt"
 )
 
 type TestProducer struct{}

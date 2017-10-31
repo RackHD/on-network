@@ -10,9 +10,9 @@ import (
 
 	"github.com/RackHD/on-network/models"
 
+	"github.com/RackHD/on-network/controllers/switch_firmware"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/RackHD/on-network/controllers/switch_firmware"
 )
 
 type TestProducer struct{}

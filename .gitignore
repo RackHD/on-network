@@ -1,3 +1,5 @@
+# Copyright 2017, Dell EMC, Inc.
+
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
 *.a
@@ -12,6 +14,8 @@ _test
 
 # Generated Binaries
 cmd/on-network-server/on-network-server*
+cmd/on-network-server-impl/on-network-server*
+
 
 # Architecture specific extensions/prefixes
 *.[568vq]

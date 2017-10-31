@@ -9,15 +9,15 @@ import (
 
 type FakeRunner struct {
 	// Update
-	FailCopyCommand        bool
+	FailCopyCommand           bool
 	FailCopyCommandWrongParam bool
-	FailInstallCommand     bool
-	InstallCommand         string
-	FailReconnecting       bool
-	FailShowVersionCommand bool
-	SuccessShowVersion     bool
-	ImageFileName          []string
-	DowngradeNonDisruptive bool
+	FailInstallCommand        bool
+	InstallCommand            string
+	FailReconnecting          bool
+	FailShowVersionCommand    bool
+	SuccessShowVersion        bool
+	ImageFileName             []string
+	DowngradeNonDisruptive    bool
 
 	// GetConfig
 	FailShowConfigCommand bool
@@ -25,23 +25,21 @@ type FakeRunner struct {
 	//Get Firmware Version
 	FailShowFirmwareVersionCommand bool
 
-	TimeoutInstall		   bool
-	IsShowVersion          bool
-	CopyCounter 		   int
-
+	TimeoutInstall bool
+	IsShowVersion  bool
+	CopyCounter    int
 }
 
-func (fr *FakeRunner) Run(command string,method string,   timeout time.Duration) (string, error) {
-
+func (fr *FakeRunner) Run(command string, method string, timeout time.Duration) (string, error) {
 
 	if strings.Contains(command, "copy") {
-		fr.ImageFileName  = append(fr.ImageFileName,  strings.Split((strings.Split(command, " ")[2]), ":")[1])
+		fr.ImageFileName = append(fr.ImageFileName, strings.Split((strings.Split(command, " ")[2]), ":")[1])
 
 		if fr.FailCopyCommand {
 			return "", errors.New(1, "fake copy command failed")
 		}
 
-		if fr.FailCopyCommandWrongParam{
+		if fr.FailCopyCommandWrongParam {
 			return "", errors.New(1, "Missing required image type")
 		}
 	}
@@ -78,10 +76,10 @@ func (fr *FakeRunner) Run(command string,method string,   timeout time.Duration)
 			return imageFileName, nil
 		}
 		if fr.TimeoutInstall {
-			if (fr.IsShowVersion == false) {
+			if fr.IsShowVersion == false {
 				fr.IsShowVersion = true
 				return "", errors.New(2, "failed as switch is rebooting")
-			} else{
+			} else {
 				imageFileName := fr.ImageFileName[fr.CopyCounter]
 				fr.CopyCounter++
 				return imageFileName, nil
