@@ -20,9 +20,9 @@ import (
 
 type SwitchEndpoint struct {
 
-	// ip
+	// ipaddress
 	// Required: true
-	IP *string `json:"ip"`
+	Ipaddress *string `json:"ipaddress"`
 
 	// password
 	// Required: true
@@ -37,7 +37,7 @@ type SwitchEndpoint struct {
 	Username *string `json:"username"`
 }
 
-/* polymorph SwitchEndpoint ip false */
+/* polymorph SwitchEndpoint ipaddress false */
 
 /* polymorph SwitchEndpoint password false */
 
@@ -49,7 +49,7 @@ type SwitchEndpoint struct {
 func (m *SwitchEndpoint) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateIP(formats); err != nil {
+	if err := m.validateIpaddress(formats); err != nil {
 		// prop
 		res = append(res, err)
 	}
@@ -75,9 +75,9 @@ func (m *SwitchEndpoint) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *SwitchEndpoint) validateIP(formats strfmt.Registry) error {
+func (m *SwitchEndpoint) validateIpaddress(formats strfmt.Registry) error {
 
-	if err := validate.Required("ip", "body", m.IP); err != nil {
+	if err := validate.Required("ipaddress", "body", m.Ipaddress); err != nil {
 		return err
 	}
 
