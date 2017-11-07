@@ -19,7 +19,7 @@ COMMENT["swagger-codegen-ignore_comment"]="#${COPYRIGHT}"
 COMMENT["gitignore_comment"]="#${COPYRIGHT}"
 
 
-GENERATED_FOLDERS="client cmd models restapi"
+TARGETED_FOLDERS="client cmd models restapi controllers"
 
 FILE_TYPES=`find . -type f -name '*.*' | sed 's|.*\.||' | sort -u`
 
@@ -29,7 +29,7 @@ function part_of_list(){
     echo $1 | grep -w $2
 }
 
-for folder in $GENERATED_FOLDERS; do
+for folder in $TARGETED_FOLDERS; do
     pushd $folder
 
     for fileType in $FILE_TYPES; do

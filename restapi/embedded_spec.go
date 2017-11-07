@@ -341,13 +341,13 @@ func init() {
     "SwitchEndpoint": {
       "type": "object",
       "required": [
-        "ip",
+        "ipaddress",
         "username",
         "password",
         "switchType"
       ],
       "properties": {
-        "ip": {
+        "ipaddress": {
           "type": "string"
         },
         "password": {

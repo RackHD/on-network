@@ -8,8 +8,8 @@ Copyright © 2017 Dell Inc. or its subsidiaries.  All Rights Reserved.
 `on-network` is the network service for RackHD. This service performs a variety of network configuration functions, including the following: 
 
 * Gets the running configuration for a switch. 
-* Retrieves the short version for the firmware currently running on a Cisco Nexus 3132, Cisco Nexus 3164, Cisco Nexus 3172, or Cisco Nexus 93180 switch. 
-* Retrieves the full version for the firmware currently running on a Cisco Nexus 3132, Cisco Nexus 3164, Cisco Nexus 3172, or Cisco Nexus 93180 switch. 
+* Retrieves the short version for the firmware currently running on a Cisco Nexus 3132, Cisco Nexus 3164, Cisco Nexus 3172, Cisco Nexus 9332, or Cisco Nexus 93180 switch. 
+* Retrieves the full version for the firmware currently running on a Cisco Nexus 3132, Cisco Nexus 3164, Cisco Nexus 3172, Cisco Nexus 9332, or Cisco Nexus 93180 switch. 
 * Updates switch firmware based on a specified switch type and firmware image. For Cisco 3164, Cisco 9332, and Cisco 93180 switches, the update is performed by a non-disruptive "install all" command. For Cisco 3132 and Cisco 3172 switches, the update is performed by a disruptive "install all" command. 
 
 These functions are exposed through a REST API. Before making these calls, a client must first use the `/login` REST call to authenticate to the service. The `/login` call returns a token that must be passed in the header for each subsequent call.
@@ -44,8 +44,8 @@ You can use any of the following techniques to build the project and run the ser
 If you want to build the project by using the go command or the make command, you need to set some environment variables first. Here are the environment variables and some suggested values:
 
 ```
-SERVICE_USERNAME=admin;                                       
-SERVICE_PASSWORD=Password123!;
+SERVICE_USERNAME=<username>;                                       
+SERVICE_PASSWORD=<password>;
 CISCO_BOOT_TIME_IN_SECONDS=20;                            // time it takes for the switch to reboot after firmware update
 CISCO_INSTALL_TIME_IN_MINUTES=4;                           // time it takes to install firmware
 CISCO_RECONNECTION_TIMEOUT_IN_SECONDS=240;  //time it takes  for cisco to reboot 
@@ -54,8 +54,8 @@ SWITCH_MODELS_FILE_PATH=switchModels.yml           //this  is the file path whic
 ```
 To set the environment variables on Linux, use the export command, as shown in the following example:
 ```
-export SERVICE_USERNAME="admin"
-export SERVICE_PASSWORD=Password123!
+export SERVICE_USERNAME=<username>
+export SERVICE_PASSWORD=<password>
 export CISCO_BOOT_TIME_IN_SECONDS=20
 export CISCO_INSTALL_TIME_IN_MINUTES=4
 export CISCO_RECONNECTION_TIMEOUT_IN_SECONDS=240
@@ -78,7 +78,7 @@ make link clean deps
 3. Run the main.go to start the service. For example:
 
 ``` 
-go run cmd/on-network-server/main.go --port 8081 --host 0.0.0.0 --write-timeout 10m
+go run cmd/on-network-server-impl/main.go --port 8081 --host 0.0.0.0 --write-timeout 10m
 ```
 
  The parameters for main.go are described below:
@@ -137,8 +137,33 @@ make docker
 2. Execute the Docker run command to start the image:
 
 ```
-sudo docker run -i -p 8081:8080 -e "SERVICE_USERNAME=admin" -e "SERVICE_PASSWORD=Password123!" -e "SWITCH_MODELS_FILE_PATH=switchModels.yml" -e "CISCO_BOOT_TIME_IN_SECONDS=20" -e "CISCO_RECONNECTION_TIMEOUT_IN_SECONDS=240" -e "CISCO_INSTALL_TIME_IN_MINUTES=4" on-network:dev
+sudo docker run -i -p 8081:8080 -e "SERVICE_USERNAME=<username>" -e "SERVICE_PASSWORD=<password>" -e "SWITCH_MODELS_FILE_PATH=switchModels.yml" -e "CISCO_BOOT_TIME_IN_SECONDS=20" -e "CISCO_RECONNECTION_TIMEOUT_IN_SECONDS=240" -e "CISCO_INSTALL_TIME_IN_MINUTES=4" on-network:dev
 ```
+## Adding on-network to RackHD
+
+To add on-network to RackHD: 
+
+1. Edit `/opt/monorail/config.json` on a RackHD deployment.
+
+2. Add the on-network configuration, as shown in the following example:
+
+```
+{
+...
+   "onNetwork": {
+       "url": "localhost:8081",
+       "username": "<username>",
+       "password": "<password>"
+    }
+
+...
+}
+```
+
+3. Restart the RackHD service.
+
+**Note:** When RackHD is deployed within Symphony, you do not need to add the on-network configuration to the `config.json` file.
+
 ## Generating the server code with go-swagger
 
 To generate the server code: 
@@ -198,8 +223,8 @@ Content-Type: application/json
 
 ```
 {
-     "username": "admin",
-     "password": "Password123!"
+     "username": "<username>",
+     "password": "<password>"
 }
 ```
 
@@ -223,7 +248,7 @@ POST localhost:8081/switchVersion
 
 ```
 Content-Type: application/json
-Authorization: "Bearer < token from login >"
+Authorization: "Bearer <token-from-login>"
 ```
 
 
@@ -233,8 +258,8 @@ Authorization: "Bearer < token from login >"
 {
     "endpoint": {
         "ip": "<ip-address>",
-        "username": "admin",
-        "password": "password123!",
+        "username": "<username>",
+        "password": "<password>",
         "switchType": "cisco"    
   }
 }
@@ -253,7 +278,7 @@ POST localhost:8081/updateSwitch
 
 ```
 Content-Type: application/json
-Authorization: "Bearer < token from login >"
+Authorization: "Bearer <token-from-login>"
 ```
 
 #### Body
@@ -261,9 +286,9 @@ Authorization: "Bearer < token from login >"
 ```
 {   
 	"endpoint": {
-		"ip":"<ip-address>",
-    	"username":"admin",
-    	"password":"password123!",
+	"ip":"<ip-address>",
+    	"username":"<username>",
+    	"password":"<password>",
     	"switchType":"cisco"
 	 },
 	  "imageURL":"http://<ip-address>:8080/nxos.7.0.3.I5.2.bin",

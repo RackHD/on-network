@@ -1,3 +1,5 @@
+// Copyright 2017, Dell EMC, Inc.
+
 package switch_firmware
 
 import (
@@ -25,10 +27,10 @@ func MiddleWare(r *http.Request, body *models.Switch) middleware.Responder {
 
 	var client switch_operations.ISwitch
 
-	if *body.Endpoint.SwitchType == "cisco" {
+	if *body.Endpoint.SwitchType == "cisco" || *body.Endpoint.SwitchType == "nexus" {
 		client = &cisco.Switch{
 			Runner: &nexus.Runner{
-				IP:       *body.Endpoint.IP,
+				IP:       *body.Endpoint.Ipaddress,
 				Username: *body.Endpoint.Username,
 				Password: *body.Endpoint.Password,
 			},
