@@ -1,6 +1,6 @@
 // Copyright 2017, Dell EMC, Inc.
 
-package switch_config_test
+package check_vlan_test
 
 import (
 	"bytes"
@@ -10,11 +10,11 @@ import (
 	"net/http/httptest"
 	"os"
 
-	. "github.com/RackHD/on-network/controllers/switch_config"
 	"github.com/RackHD/on-network/models"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/RackHD/on-network/controllers/check_vlan"
 )
 
 type TestProducer struct{}
@@ -25,7 +25,7 @@ func (t TestProducer) Produce(w io.Writer, data interface{}) error {
 	return enc.Encode(data)
 }
 
-var _ = Describe("SwitchConfig", func() {
+var _ = Describe("CheckVlan", func() {
 	var prod TestProducer
 	var buff *httptest.ResponseRecorder
 
@@ -37,8 +37,8 @@ var _ = Describe("SwitchConfig", func() {
 		os.Setenv("SWITCH_MODELS_FILE_PATH", "../../switch_operations/cisco/fake/switchModels.yml")
 	})
 
-	Context("when a message is routed to the /switchConfig handler", func() {
-		It("info API should return switch running config", func() {
+	Context("when a message is routed to the /checkVlan handler", func() {
+		It("info API should return whether the vlan exists", func() {
 			// Create on-network api about
 			serverURL := "http://localhost:8080"
 
@@ -49,20 +49,20 @@ var _ = Describe("SwitchConfig", func() {
 					"password": "test",
 					"switchType": "cisco"
 				},
-				"imageURL": "test",
-				"switchModel": "Nexus3000 C3164PQ Chassis"
+				"vlanID": 1
 			}`)
 
-			req, err := http.NewRequest("POST", serverURL+"/switchConfig", bytes.NewBuffer(jsonBody))
+			req, err := http.NewRequest("POST", serverURL+"/checkVlan", bytes.NewBuffer(jsonBody))
 			Expect(err).ToNot(HaveOccurred())
 
-			switchConfig := &models.Switch{}
-			err = json.Unmarshal(jsonBody, switchConfig)
+			checkVlan := &models.CheckVlan{}
+			err = json.Unmarshal(jsonBody, checkVlan)
+
 			Expect(err).ToNot(HaveOccurred())
 
-			responder := MiddleWare(req, switchConfig)
+			responder := check_vlan.MiddleWare(req, checkVlan)
 			responder.WriteResponse(buff, prod)
-			Expect(buff.Code).To(Equal(http.StatusNotFound))
+			Expect(buff.Code).To(Equal(http.StatusBadRequest))
 		})
 	})
 })

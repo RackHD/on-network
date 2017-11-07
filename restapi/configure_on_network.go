@@ -19,6 +19,8 @@ import (
 	"github.com/RackHD/on-network/restapi/operations/switch_config"
 	"github.com/RackHD/on-network/restapi/operations/switch_firmware"
 	"github.com/RackHD/on-network/restapi/operations/update_switch"
+	"github.com/RackHD/on-network/restapi/operations/check_vlan"
+	"github.com/RackHD/on-network/restapi/operations/switch_version"
 
 	aboutctrl "github.com/RackHD/on-network/controllers/about"
 	authctrl "github.com/RackHD/on-network/controllers/auth"
@@ -26,9 +28,11 @@ import (
 	switchfirmwarectrl "github.com/RackHD/on-network/controllers/switch_firmware"
 	switchversionctrl "github.com/RackHD/on-network/controllers/switch_version"
 	updateswitchctrl "github.com/RackHD/on-network/controllers/update_switch"
+	checkvlanctrl "github.com/RackHD/on-network/controllers/check_vlan"
 	"github.com/RackHD/on-network/restapi/operations/auth"
-	"github.com/RackHD/on-network/restapi/operations/switch_version"
+
 	"strings"
+
 )
 
 // This file is safe to edit. Once it exists it will not be overwritten
@@ -86,6 +90,10 @@ func configureAPI(api *operations.OnNetworkAPI) http.Handler {
 
 	api.SwitchVersionSwitchVersionHandler = switch_version.SwitchVersionHandlerFunc(func(params switch_version.SwitchVersionParams, principal interface{}) middleware.Responder {
 		return switchversionctrl.MiddleWare(params.HTTPRequest, params.Body)
+	})
+
+	api.CheckVlanCheckVlanHandler =  check_vlan.CheckVlanHandlerFunc (func(params check_vlan.CheckVlanParams, principal interface{}) middleware.Responder {
+		return checkvlanctrl.MiddleWare(params.HTTPRequest, params.Body)
 	})
 
 	api.ServerShutdown = func() {}
