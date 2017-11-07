@@ -49,31 +49,32 @@ link:
 	fi
 
 linux:
-	cd ${BUILD_DIR}; \
+	cd ${BUILD_DIR} && \
 	GOOS=linux GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BINARY}-linux-${GOARCH} . ; 
 
 darwin:
-	cd ${BUILD_DIR}; \
+	cd ${BUILD_DIR} && \
 	GOOS=darwin GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BINARY}-darwin-${GOARCH} . ; 
 
 windows:
-	cd ${BUILD_DIR}; \
+	cd ${BUILD_DIR} && \
 	GOOS=windows GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BINARY}-windows-${GOARCH}.exe . ; 
 
 docker:
 	docker build -t on-network:dev .
+
 test:
-	cd ${REPO_DIR}; \
-	ginkgo -v ./... -cover -trace -race ; \
-	gover ... ; \
-	cat gover.coverprofile ; 
+	cd ${REPO_DIR} && \
+	ginkgo -r -v --keepGoing --trace --race --cover && \
+	gover  && \
+	cat gover.coverprofile ;
 
 vet:
-	cd ${REPO_DIR}; \
+	cd ${REPO_DIR} && \
 	go vet ./... > ${VET_REPORT} 2>&1 ; 
 
 fmt:
-	cd ${REPO_DIR}; \
+	cd ${REPO_DIR} && \
 	go fmt $$(go list ./... | grep -v /vendor/) ; 
 
 clean:
