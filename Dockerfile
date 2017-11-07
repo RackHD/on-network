@@ -12,7 +12,7 @@ WORKDIR /project
 RUN make link clean deps linux
 
 # Run the on-network command by default when the container starts.
-CMD /project/cmd/on-network-server/on-network-linux-amd64 --port 8080 --host 0.0.0.0 --write-timeout 10m
+CMD /project/cmd/on-network-server-impl/on-network-linux-amd64 --port 8080 --host 0.0.0.0 --write-timeout 10m
 
 # Document that the service listens on port 8080.
 EXPOSE 8080
