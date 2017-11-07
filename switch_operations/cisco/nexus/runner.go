@@ -1,3 +1,5 @@
+// Copyright 2017, Dell EMC, Inc.
+
 package nexus
 
 import (
@@ -74,6 +76,7 @@ func (nr *Runner) Run(command string, method string, timeout time.Duration) (str
 	}
 	defer resp.Body.Close()
 
+	fmt.Println("Full Response: %v", resp)
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return string(body), fmt.Errorf("error reading response body: %+v", err)

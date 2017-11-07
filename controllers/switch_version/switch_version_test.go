@@ -38,13 +38,13 @@ var _ = Describe("SwitchVersion", func() {
 	})
 
 	Context("when a message is routed to the /switchVersion handler", func() {
-		It("info API should return switch firmware", func() {
+		It("info API should return switch version", func() {
 			// Create on-network api about
 			serverURL := "http://localhost:8080"
 
 			jsonBody := []byte(`{
 				"endpoint": {
-					"ip": "test",
+					"ipaddress": "test",
 					"username": "test",
 					"password": "test",
 					"switchType": "cisco"

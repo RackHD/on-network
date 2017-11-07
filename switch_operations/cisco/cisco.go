@@ -1,3 +1,5 @@
+// Copyright 2017, Dell EMC, Inc.
+
 package cisco
 
 import (
@@ -282,6 +284,28 @@ func (c *Switch) GetFullVersion() (map[string]interface{}, error) {
 	delete(respInterface, "TABLE_package_list")
 	return respInterface, nil
 }
+
+func (c *Switch) CheckVlan( vlanID int64 ) (bool, error){
+
+	command := fmt.Sprintf("show vlan id %v" , vlanID)
+	result, err := c.Runner.Run(command, "cli", 0)
+	if err != nil {
+		return false, fmt.Errorf("error running show vlan command: %+v", err)
+	}
+
+	var checkVlanBody nexus.CommandRunnerResponseBody
+	err = json.Unmarshal([]byte(result), &checkVlanBody)
+	if err != nil {
+		return false, fmt.Errorf("error getting the result of show vlan: %+v", err)
+	}
+
+	if checkVlanBody.Result.Body != nil  {
+		return true, nil
+	} else{
+		return false, nil
+	}
+}
+
 
 func checkUpgradeErrorStatus(err error) error {
 	if err != nil {

@@ -44,7 +44,7 @@ var _ = Describe("SwitchFirmware", func() {
 
 			jsonBody := []byte(`{
 				"endpoint": {
-					"ip": "test",
+					"ipaddress": "test",
 					"username": "test",
 					"password": "test",
 					"switchType": "cisco"

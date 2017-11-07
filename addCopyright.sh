@@ -19,7 +19,7 @@ COMMENT["swagger-codegen-ignore_comment"]="#${COPYRIGHT}"
 COMMENT["gitignore_comment"]="#${COPYRIGHT}"
 
 
-TARGETED_FOLDERS="client cmd models restapi controllers"
+TARGETED_FOLDERS="client cmd models restapi controllers switch_operations"
 
 FILE_TYPES=`find . -type f -name '*.*' | sed 's|.*\.||' | sort -u`
 

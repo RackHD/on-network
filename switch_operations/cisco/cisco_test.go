@@ -1,3 +1,5 @@
+// Copyright 2017, Dell EMC, Inc.
+
 package cisco_test
 
 import (
@@ -23,7 +25,7 @@ var _ = Describe("Cisco", func() {
 		os.Setenv("CISCO_INSTALL_TIME_IN_MINUTES", "1")
 	})
 
-	Describe("Update", func() {
+	Describe("UpdateFirmware", func() {
 		Context("When copy command fails for 6.0 firmware", func() {
 			It("should return an error", func() {
 				ciscoSwitch := cisco.Switch{
@@ -263,6 +265,44 @@ var _ = Describe("Cisco", func() {
 				firmware, err := ciscoSwitch.GetFirmware()
 				Expect(err).ToNot(HaveOccurred())
 				Expect(firmware).To(Equal("7.0(3)I5(2)"))
+			})
+		})
+	})
+
+	Describe("CheckVlan", func() {
+		Context("when check vlan command failed", func() {
+			It("should return error", func() {
+				ciscoSwitch := cisco.Switch{
+					Runner: &fake.FakeRunner{FailCheckVlanCommand: true},
+				}
+
+				_, err := ciscoSwitch.CheckVlan(0)
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("error running show vlan command"))
+			})
+		})
+
+		Context("when show vlan command succeeded with null result", func() {
+			It("should return false", func() {
+				ciscoSwitch := cisco.Switch{
+					Runner: &fake.FakeRunner{SuccessShowVlanNullResult: true},
+				}
+
+				isVlan, err := ciscoSwitch.CheckVlan(5)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(isVlan).To(Equal(false))
+			})
+		})
+
+		Context("when show vlan command succeeded with result", func() {
+			It("should return true", func() {
+				ciscoSwitch := cisco.Switch{
+					Runner: &fake.FakeRunner{SuccessShowVlanNullResult: false},
+				}
+
+				isVlan, err := ciscoSwitch.CheckVlan(5)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(isVlan).To(Equal(true))
 			})
 		})
 	})

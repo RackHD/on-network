@@ -1,6 +1,6 @@
 // Copyright 2017, Dell EMC, Inc.
 
-package cisco_test
+package check_vlan_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestCisco(t *testing.T) {
+func TestCheckVlan(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Cisco Suite")
+	RunSpecs(t, "Check Vlan Suite")
 }
