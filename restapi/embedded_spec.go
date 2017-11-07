@@ -60,6 +60,41 @@ func init() {
         }
       }
     },
+    "/checkVlan": {
+      "post": {
+        "description": "Check if vlan exists",
+        "tags": [
+          "/checkVlan"
+        ],
+        "summary": "Checks if vlan exists",
+        "operationId": "checkVlan",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/CheckVlan"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully returned whether a vlan exists or not"
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/login": {
       "post": {
         "description": "Allow users to log in, and to receive a Token\n",
@@ -251,6 +286,21 @@ func init() {
       "properties": {
         "name": {
           "type": "string"
+        }
+      }
+    },
+    "CheckVlan": {
+      "type": "object",
+      "required": [
+        "endpoint",
+        "vlanID"
+      ],
+      "properties": {
+        "endpoint": {
+          "$ref": "#/definitions/SwitchEndpoint"
+        },
+        "vlanID": {
+          "type": "integer"
         }
       }
     },

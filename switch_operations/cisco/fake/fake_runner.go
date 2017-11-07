@@ -25,6 +25,10 @@ type FakeRunner struct {
 	//Get Firmware Version
 	FailShowFirmwareVersionCommand bool
 
+	//Check Vlan
+	FailCheckVlanCommand bool
+	SuccessShowVlanNullResult bool
+
 	TimeoutInstall bool
 	IsShowVersion  bool
 	CopyCounter    int
@@ -60,7 +64,7 @@ func (fr *FakeRunner) Run(command string, method string, timeout time.Duration) 
 		}
 	}
 
-	if strings.Contains(command, "show") {
+	if strings.Contains(command, "show version") {
 		if fr.FailReconnecting {
 			time.Sleep(10 * time.Second)
 			return "", errors.New(2, "failed to reconnect")
@@ -85,16 +89,6 @@ func (fr *FakeRunner) Run(command string, method string, timeout time.Duration) 
 				return imageFileName, nil
 			}
 		}
-	}
-
-	if strings.Contains(command, "show running-config") {
-		if fr.FailShowConfigCommand {
-			return "", errors.New(4, "fake show config command failed")
-		}
-		return "{\"config\":\"empty\"}", nil
-	}
-
-	if strings.Contains(command, "show version") {
 		if fr.FailShowFirmwareVersionCommand {
 			return "", errors.New(4, "fake show version command failed")
 		}
@@ -107,6 +101,35 @@ func (fr *FakeRunner) Run(command string, method string, timeout time.Duration) 
 		},
 		"id": 1
 		}`, nil
+	}
+
+	if strings.Contains(command, "show running-config") {
+		if fr.FailShowConfigCommand {
+			return "", errors.New(4, "fake show config command failed")
+		}
+		return "{\"config\":\"empty\"}", nil
+	}
+
+	if strings.Contains(command, "show vlan id") {
+		if fr.FailCheckVlanCommand {
+			return "", errors.New(4, "Invalid value/range")
+		}
+		if fr.SuccessShowVlanNullResult {
+			return `{
+				"jsonrpc": "2.0",
+					"result": null,
+					"id": 1
+			}`, nil
+		}
+		return `{
+			  "jsonrpc": "2.0",
+			  "result": {
+				"body": {
+				  "vlanshowrspan-vlantype": "notrspan"
+				}
+			  },
+			  "id": 1
+			}`,nil
 	}
 
 	return "", nil

@@ -23,6 +23,7 @@ import (
 
 	"github.com/RackHD/on-network/restapi/operations/about"
 	"github.com/RackHD/on-network/restapi/operations/auth"
+	"github.com/RackHD/on-network/restapi/operations/check_vlan"
 	"github.com/RackHD/on-network/restapi/operations/switch_config"
 	"github.com/RackHD/on-network/restapi/operations/switch_firmware"
 	"github.com/RackHD/on-network/restapi/operations/switch_version"
@@ -49,6 +50,9 @@ func NewOnNetworkAPI(spec *loads.Document) *OnNetworkAPI {
 		}),
 		AboutAboutGetHandler: about.AboutGetHandlerFunc(func(params about.AboutGetParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation AboutAboutGet has not yet been implemented")
+		}),
+		CheckVlanCheckVlanHandler: check_vlan.CheckVlanHandlerFunc(func(params check_vlan.CheckVlanParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation CheckVlanCheckVlan has not yet been implemented")
 		}),
 		SwitchConfigSwitchConfigHandler: switch_config.SwitchConfigHandlerFunc(func(params switch_config.SwitchConfigParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation SwitchConfigSwitchConfig has not yet been implemented")
@@ -110,6 +114,8 @@ type OnNetworkAPI struct {
 	AuthPostLoginHandler auth.PostLoginHandler
 	// AboutAboutGetHandler sets the operation handler for the about get operation
 	AboutAboutGetHandler about.AboutGetHandler
+	// CheckVlanCheckVlanHandler sets the operation handler for the check vlan operation
+	CheckVlanCheckVlanHandler check_vlan.CheckVlanHandler
 	// SwitchConfigSwitchConfigHandler sets the operation handler for the switch config operation
 	SwitchConfigSwitchConfigHandler switch_config.SwitchConfigHandler
 	// SwitchFirmwareSwitchFirmwareHandler sets the operation handler for the switch firmware operation
@@ -191,6 +197,10 @@ func (o *OnNetworkAPI) Validate() error {
 
 	if o.AboutAboutGetHandler == nil {
 		unregistered = append(unregistered, "about.AboutGetHandler")
+	}
+
+	if o.CheckVlanCheckVlanHandler == nil {
+		unregistered = append(unregistered, "check_vlan.CheckVlanHandler")
 	}
 
 	if o.SwitchConfigSwitchConfigHandler == nil {
@@ -318,6 +328,11 @@ func (o *OnNetworkAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/about"] = about.NewAboutGet(o.context, o.AboutAboutGetHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/checkVlan"] = check_vlan.NewCheckVlan(o.context, o.CheckVlanCheckVlanHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)

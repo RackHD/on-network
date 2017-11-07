@@ -8,4 +8,5 @@ type ISwitch interface {
 	GetConfig() (string, error)
 	GetFirmware() (string, error)
 	GetFullVersion() (map[string]interface{}, error)
+	CheckVlan(int64)(bool, error)
 }
