@@ -151,7 +151,7 @@ To add on-network to RackHD:
 {
 ...
    "onNetwork": {
-       "url": "localhost:8081",
+       "url": "http://localhost:8081",
        "username": "<username>",
        "password": "<password>"
     }
